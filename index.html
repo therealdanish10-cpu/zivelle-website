@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Zivelle by Zara — Timeless Elegance. Handcrafted luxury jewelry made to be worn forever.">
+  <meta name="theme-color" content="#f3e5d8">
+  <title>ZIVELLE — Timeless Elegance | Handcrafted Luxury Jewelry</title>
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Header & Navbar
+       ========================================================================= -->
+  <header class="site-header" id="site-header">
+    <div class="container">
+      <nav class="navbar" aria-label="Main Navigation">
+        
+        <!-- Brand Logo (Left) -->
+        <a href="#hero" class="brand-logo" aria-label="Zivelle Home">
+          <span class="brand-name">ZIVELLE</span>
+        </a>
+
+        <!-- Navigation Links (Center / Desktop) -->
+        <ul class="nav-links">
+          <li><a href="#hero" class="nav-link active">Home</a></li>
+          <li><a href="#shop" class="nav-link">Shop</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#reviews" class="nav-link">Reviews</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+
+        <!-- Nav Actions (Right: WhatsApp, Cart, Hamburger) -->
+        <div class="nav-actions">
+          
+          <!-- WhatsApp Concierge Icon Link -->
+          <a href="https://wa.me/923469377256" target="_blank" rel="noopener noreferrer" class="nav-action-btn whatsapp-btn" aria-label="Chat with us on WhatsApp" title="WhatsApp Concierge">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M17.472 14.382c-.301-.15-1.781-.879-2.057-.98-.276-.1-.477-.15-.678.15-.2.301-.778.98-.954 1.18-.176.2-.352.226-.653.075-.301-.15-1.272-.469-2.423-1.496-.896-.799-1.501-1.786-1.677-2.087-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.2-.301.3-.502.101-.201.05-.377-.025-.527-.075-.15-.678-1.633-.929-2.238-.244-.59-.492-.51-.678-.52l-.578-.01c-.2 0-.527.075-.803.376-.276.301-1.054 1.03-1.054 2.512s1.079 2.913 1.23 3.114c.15.201 2.123 3.242 5.143 4.547.718.311 1.279.497 1.716.636.721.229 1.377.197 1.895.12.577-.087 1.781-.728 2.032-1.431.251-.703.251-1.306.176-1.431-.075-.125-.276-.201-.577-.351z"/>
+              <path d="M12.004 0C5.385 0 0 5.385 0 12.004c0 2.112.551 4.168 1.597 5.981L.069 23.513l5.688-1.492c1.748.953 3.716 1.455 5.727 1.455 6.619 0 12.004-5.385 12.004-12.004C23.988 5.385 18.623 0 12.004 0zm0 21.608c-1.879 0-3.718-.505-5.321-1.461l-.382-.227-3.957 1.038 1.056-3.858-.249-.396A9.605 9.605 0 0 1 2.4 12.004C2.4 6.708 6.708 2.4 12.004 2.4c5.296 0 9.604 4.308 9.604 9.604 0 5.296-4.308 9.604-9.604 9.604z"/>
+            </svg>
+          </a>
+
+          <!-- Cart Icon Button with Gold Badge -->
+          <button type="button" class="nav-action-btn cart-btn" id="cart-btn" aria-label="Open shopping bag with 0 items" aria-expanded="false" aria-controls="cart-drawer" title="View Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="cart-badge" id="cart-count">0</span>
+          </button>
+
+          <!-- Mobile Hamburger Menu Button -->
+          <button class="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-drawer">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Mobile Slide-in Navigation Drawer
+       ========================================================================= -->
+  <div class="drawer-backdrop" aria-hidden="true"></div>
+
+  <aside class="mobile-drawer" id="mobile-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Mobile Navigation Menu">
+    <div>
+      <div class="drawer-header">
+        <span class="drawer-brand">ZIVELLE</span>
+        <button class="drawer-close-btn" aria-label="Close navigation menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <ul class="drawer-nav-list">
+        <li><a href="#hero" class="drawer-nav-link active">Home</a></li>
+        <li><a href="#shop" class="drawer-nav-link">Shop Collection</a></li>
+        <li><a href="#about" class="drawer-nav-link">Our Story</a></li>
+        <li><a href="#reviews" class="drawer-nav-link">Client Reviews</a></li>
+        <li><a href="#contact" class="drawer-nav-link">Contact & Concierge</a></li>
+      </ul>
+    </div>
+
+    <div class="drawer-footer">
+      <a href="https://wa.me/923469377256" target="_blank" rel="noopener noreferrer" class="drawer-contact-item">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12.004 0C5.385 0 0 5.385 0 12.004c0 2.112.551 4.168 1.597 5.981L.069 23.513l5.688-1.492c1.748.953 3.716 1.455 5.727 1.455 6.619 0 12.004-5.385 12.004-12.004C23.988 5.385 18.623 0 12.004 0z"/>
+        </svg>
+        <span>WhatsApp Concierge: +92 346 9377256</span>
+      </a>
+      <p style="font-size: 0.75rem; color: #888; letter-spacing: 0.05em;">Handcrafted Luxury &bull; Timeless Elegance</p>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       Cart Slide-in Drawer & WhatsApp Checkout
+       ========================================================================= -->
+  <div class="cart-backdrop" id="cart-backdrop" aria-hidden="true"></div>
+
+  <aside class="cart-drawer" id="cart-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Shopping Bag">
+    
+    <!-- Drawer Header -->
+    <div class="cart-drawer-header">
+      <div class="cart-drawer-title-group">
+        <h2 class="cart-drawer-title">Your Bag</h2>
+        <span class="cart-drawer-count-badge" id="cart-drawer-count">0 items</span>
+      </div>
+      <button type="button" class="cart-drawer-close-btn" id="cart-drawer-close" aria-label="Close shopping bag">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="cart-drawer-body">
+      
+      <!-- Empty State -->
+      <div class="cart-empty-state" id="cart-empty-state">
+        <div class="cart-empty-icon-wrap">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <h3 class="cart-empty-title">Your bag is empty</h3>
+        <p class="cart-empty-desc">Discover our timeless collection of handcrafted luxury jewelry.</p>
+        <button type="button" class="btn-continue-shopping" id="btn-continue-shopping">
+          <span>Explore Collection</span>
+        </button>
+      </div>
+
+      <!-- Items List -->
+      <div class="cart-items-list" id="cart-items-list">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Delivery Details Form -->
+      <form class="cart-checkout-form" id="cart-checkout-form" novalidate>
+        <div class="checkout-form-header">
+          <span class="checkout-form-kicker">Order Information</span>
+          <h3 class="checkout-form-title">Delivery Details</h3>
+        </div>
+
+        <div class="form-group">
+          <label for="customer-name" class="form-label">
+            Full Name <span class="required-star" aria-hidden="true">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="customer-name" 
+            name="customer-name"
+            class="form-input" 
+            placeholder="e.g. Zara Khan" 
+            required 
+            autocomplete="name">
+          <span class="form-error-msg" id="name-error">Please enter your full name.</span>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="customer-phone" class="form-label">
+              Contact Number <span class="required-star" aria-hidden="true">*</span>
+            </label>
+            <input 
+              type="tel" 
+              id="customer-phone" 
+              name="customer-phone"
+              class="form-input" 
+              placeholder="03XXXXXXXXX" 
+              required 
+              autocomplete="tel">
+            <span class="form-error-msg" id="phone-error">Please enter a valid phone number.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="customer-alt-phone" class="form-label">
+              Alternate Number <span class="optional-tag">(Optional)</span>
+            </label>
+            <input 
+              type="tel" 
+              id="customer-alt-phone" 
+              name="customer-alt-phone"
+              class="form-input" 
+              placeholder="03XXXXXXXXX" 
+              autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customer-address" class="form-label">
+            Delivery Address <span class="required-star" aria-hidden="true">*</span>
+          </label>
+          <textarea 
+            id="customer-address" 
+            name="customer-address"
+            class="form-textarea" 
+            rows="2" 
+            placeholder="House/Street, Area, City" 
+            required 
+            autocomplete="street-address"></textarea>
+          <span class="form-error-msg" id="address-error">Please provide your complete delivery address.</span>
+        </div>
+      </form>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="cart-drawer-footer" id="cart-drawer-footer">
+      <div class="cart-subtotal-row">
+        <span class="cart-subtotal-label">Subtotal</span>
+        <span class="cart-subtotal-amount" id="cart-subtotal">Rs. 0</span>
+      </div>
+      <p class="cart-packaging-note">Includes complimentary signature box & certificate of authenticity.</p>
+      
+      <button type="button" class="btn-whatsapp-checkout" id="btn-whatsapp-checkout" aria-label="Checkout via WhatsApp">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.301-.15-1.781-.879-2.057-.98-.276-.1-.477-.15-.678.15-.2.301-.778.98-.954 1.18-.176.2-.352.226-.653.075-.301-.15-1.272-.469-2.423-1.496-.896-.799-1.501-1.786-1.677-2.087-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.2-.301.3-.502.101-.201.05-.377-.025-.527-.075-.15-.678-1.633-.929-2.238-.244-.59-.492-.51-.678-.52l-.578-.01c-.2 0-.527.075-.803.376-.276.301-1.054 1.03-1.054 2.512s1.079 2.913 1.23 3.114c.15.201 2.123 3.242 5.143 4.547.718.311 1.279.497 1.716.636.721.229 1.377.197 1.895.12.577-.087 1.781-.728 2.032-1.431.251-.703.251-1.306.176-1.431-.075-.125-.276-.201-.577-.351z"/>
+          <path d="M12.004 0C5.385 0 0 5.385 0 12.004c0 2.112.551 4.168 1.597 5.981L.069 23.513l5.688-1.492c1.748.953 3.716 1.455 5.727 1.455 6.619 0 12.004-5.385 12.004-12.004C23.988 5.385 18.623 0 12.004 0zm0 21.608c-1.879 0-3.718-.505-5.321-1.461l-.382-.227-3.957 1.038 1.056-3.858-.249-.396A9.605 9.605 0 0 1 2.4 12.004C2.4 6.708 6.708 2.4 12.004 2.4c5.296 0 9.604 4.308 9.604 9.604 0 5.296-4.308 9.604-9.604 9.604z"/>
+        </svg>
+        <span>Checkout via WhatsApp</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- =========================================================================
+       Main Content
+       ========================================================================= -->
+  <main>
+    
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      
+      <!-- Background Video -->
+      <div class="hero-video-container">
+        <video 
+          class="hero-video" 
+          autoplay 
+          muted 
+          loop 
+          playsinline 
+          preload="auto"
+          aria-hidden="true">
+          <source src="videos/hero-pearls.mp4" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+
+      <!-- Contrast Overlay Gradient -->
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <!-- Hero Centered Content -->
+      <div class="hero-content">
+        
+        <!-- Small Uppercase Kicker -->
+        <span class="hero-kicker">TIMELESS ELEGANCE</span>
+
+        <!-- Large Headline + Script Accent -->
+        <div class="hero-title-group">
+          <h1 class="hero-title">ZIVELLE</h1>
+          <span class="hero-script-accent">by Zara</span>
+        </div>
+
+        <!-- Short Subtext -->
+        <p class="hero-subtext">Handcrafted jewelry, made to be worn forever.</p>
+
+        <!-- CTA Button -->
+        <a href="#shop" class="hero-cta">
+          <span>Shop Now</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+
+      </div>
+
+      <!-- Scroll Down Indicator -->
+      <a href="#shop" class="scroll-indicator" aria-label="Scroll down to view collection">
+        <span class="scroll-indicator-text">Explore</span>
+        <svg class="scroll-indicator-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </a>
+
+    </section>
+
+    <!-- =======================================================================
+         Shop / Product Grid Section
+         ======================================================================= -->
+    <section class="shop" id="shop">
+      <div class="container">
+        
+        <!-- Section Header -->
+        <div class="shop-header fade-slide-up">
+          <span class="shop-kicker">Curated Atelier</span>
+          <h2 class="shop-title">Our Collection</h2>
+          <div class="shop-divider" aria-hidden="true">
+            <span class="shop-divider-line"></span>
+            <span class="shop-divider-diamond"></span>
+            <span class="shop-divider-line"></span>
+          </div>
+          <p class="shop-subtitle">
+            Handcrafted fine jewelry cast in ethical 18k gold, lustrous freshwater pearls, and brilliant gems.
+          </p>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="shop-filters fade-slide-up" role="tablist" aria-label="Product categories">
+          <button type="button" class="filter-pill active" data-filter="all" role="tab" aria-selected="true">
+            <span>All</span>
+            <span class="filter-count">8</span>
+          </button>
+          <button type="button" class="filter-pill" data-filter="chains" role="tab" aria-selected="false">
+            <span>Chains</span>
+            <span class="filter-count">2</span>
+          </button>
+          <button type="button" class="filter-pill" data-filter="bracelets" role="tab" aria-selected="false">
+            <span>Bracelets</span>
+            <span class="filter-count">2</span>
+          </button>
+          <button type="button" class="filter-pill" data-filter="rings" role="tab" aria-selected="false">
+            <span>Rings</span>
+            <span class="filter-count">2</span>
+          </button>
+          <button type="button" class="filter-pill" data-filter="earrings" role="tab" aria-selected="false">
+            <span>Earrings</span>
+            <span class="filter-count">2</span>
+          </button>
+        </div>
+
+        <!-- Responsive Products Grid (4 col desktop, 2 col tablet, 1 col mobile) -->
+        <div class="products-grid" id="products-grid">
+
+          <!-- Product 1: Chains -->
+          <article class="product-card" data-category="chains" data-id="prod-1" data-name="Lustre Baroque Pearl Chain" data-price="Rs. 4,800">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-1.jpg" alt="Lustre Baroque Pearl Chain" class="product-img" loading="lazy">
+              <span class="product-badge">Bestseller</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Chains</span>
+              <h3 class="product-title">Lustre Baroque Pearl Chain</h3>
+              <div class="product-price">Rs. 4,800</div>
+              
+              <!-- Variant Options -->
+              <div class="product-variants" aria-label="Length selection">
+                <span class="variant-label">Length:</span>
+                <div class="variant-pills">
+                  <button type="button" class="variant-pill active" data-variant="16 inch">16"</button>
+                  <button type="button" class="variant-pill" data-variant="18 inch">18"</button>
+                  <button type="button" class="variant-pill" data-variant="20 inch">20"</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Lustre Baroque Pearl Chain to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 2: Rings -->
+          <article class="product-card" data-category="rings" data-id="prod-2" data-name="Aura Solitaire Moissanite Ring" data-price="Rs. 6,500">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-2.jpg" alt="Aura Solitaire Moissanite Ring" class="product-img" loading="lazy">
+              <span class="product-badge">Signature</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Rings</span>
+              <h3 class="product-title">Aura Solitaire Moissanite Ring</h3>
+              <div class="product-price">Rs. 6,500</div>
+              
+              <!-- Variant Options -->
+              <div class="product-variants" aria-label="Ring size selection">
+                <span class="variant-label">Size:</span>
+                <div class="variant-pills">
+                  <button type="button" class="variant-pill active" data-variant="US 6">US 6</button>
+                  <button type="button" class="variant-pill" data-variant="US 7">US 7</button>
+                  <button type="button" class="variant-pill" data-variant="US 8">US 8</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Aura Solitaire Moissanite Ring to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 3: Bracelets -->
+          <article class="product-card" data-category="bracelets" data-id="prod-3" data-name="Celestial Tennis Bracelet" data-price="Rs. 5,200">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-3.jpg" alt="Celestial Tennis Bracelet" class="product-img" loading="lazy">
+              <span class="product-badge">New</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Bracelets</span>
+              <h3 class="product-title">Celestial Tennis Bracelet</h3>
+              <div class="product-price">Rs. 5,200</div>
+              
+              <!-- Variant Options -->
+              <div class="product-variants" aria-label="Bracelet length selection">
+                <span class="variant-label">Wrist:</span>
+                <div class="variant-pills">
+                  <button type="button" class="variant-pill active" data-variant="6.5 inch">6.5"</button>
+                  <button type="button" class="variant-pill" data-variant="7.0 inch">7.0"</button>
+                  <button type="button" class="variant-pill" data-variant="7.5 inch">7.5"</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Celestial Tennis Bracelet to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 4: Earrings -->
+          <article class="product-card" data-category="earrings" data-id="prod-4" data-name="Étoile Cascade Drop Earrings" data-price="Rs. 3,900">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-4.jpg" alt="Étoile Cascade Drop Earrings" class="product-img" loading="lazy">
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Earrings</span>
+              <h3 class="product-title">Étoile Cascade Drop Earrings</h3>
+              <div class="product-price">Rs. 3,900</div>
+              
+              <!-- Spacer for uniform card heights -->
+              <div class="product-variants product-variants-empty" aria-hidden="true">
+                <span class="variant-label">&nbsp;</span>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Étoile Cascade Drop Earrings to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 5: Chains -->
+          <article class="product-card" data-category="chains" data-id="prod-5" data-name="Aurelia Herringbone Snake Chain" data-price="Rs. 4,200">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-5.jpg" alt="Aurelia Herringbone Snake Chain" class="product-img" loading="lazy">
+              <span class="product-badge">Popular</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Chains</span>
+              <h3 class="product-title">Aurelia Herringbone Snake Chain</h3>
+              <div class="product-price">Rs. 4,200</div>
+              
+              <!-- Variant Options -->
+              <div class="product-variants" aria-label="Length selection">
+                <span class="variant-label">Length:</span>
+                <div class="variant-pills">
+                  <button type="button" class="variant-pill active" data-variant="16 inch">16"</button>
+                  <button type="button" class="variant-pill" data-variant="18 inch">18"</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Aurelia Herringbone Snake Chain to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 6: Rings -->
+          <article class="product-card" data-category="rings" data-id="prod-6" data-name="Vermeil Twisted Band Ring" data-price="Rs. 3,200">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-6.jpg" alt="Vermeil Twisted Band Ring" class="product-img" loading="lazy">
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Rings</span>
+              <h3 class="product-title">Vermeil Twisted Band Ring</h3>
+              <div class="product-price">Rs. 3,200</div>
+              
+              <!-- Variant Options -->
+              <div class="product-variants" aria-label="Ring size selection">
+                <span class="variant-label">Size:</span>
+                <div class="variant-pills">
+                  <button type="button" class="variant-pill active" data-variant="US 5">US 5</button>
+                  <button type="button" class="variant-pill" data-variant="US 6">US 6</button>
+                  <button type="button" class="variant-pill" data-variant="US 7">US 7</button>
+                  <button type="button" class="variant-pill" data-variant="US 8">US 8</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Vermeil Twisted Band Ring to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 7: Earrings -->
+          <article class="product-card" data-category="earrings" data-id="prod-7" data-name="Pearl Blossom Huggie Hoops" data-price="Rs. 3,600">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-7.jpg" alt="Pearl Blossom Huggie Hoops" class="product-img" loading="lazy">
+              <span class="product-badge">New</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Earrings</span>
+              <h3 class="product-title">Pearl Blossom Huggie Hoops</h3>
+              <div class="product-price">Rs. 3,600</div>
+              
+              <!-- Spacer for uniform card heights -->
+              <div class="product-variants product-variants-empty" aria-hidden="true">
+                <span class="variant-label">&nbsp;</span>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Pearl Blossom Huggie Hoops to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Product 8: Bracelets -->
+          <article class="product-card" data-category="bracelets" data-id="prod-8" data-name="Solis 18k Cuff Bangle" data-price="Rs. 5,800">
+            <div class="product-image-wrap">
+              <img src="images/products/placeholder-8.jpg" alt="Solis 18k Cuff Bangle" class="product-img" loading="lazy">
+              <span class="product-badge">Signature</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category-label">Bracelets</span>
+              <h3 class="product-title">Solis 18k Cuff Bangle</h3>
+              <div class="product-price">Rs. 5,800</div>
+              
+              <!-- Variant Options -->
+              <div class="product-variants" aria-label="Size selection">
+                <span class="variant-label">Size:</span>
+                <div class="variant-pills">
+                  <button type="button" class="variant-pill active" data-variant="Small">Small</button>
+                  <button type="button" class="variant-pill" data-variant="Medium">Medium</button>
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-cart" aria-label="Add Solis 18k Cuff Bangle to cart">
+                <svg class="cart-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Floating Toast Notification Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- =======================================================================
+         Parallax Jewelry Showcase Section
+         ======================================================================= -->
+    <section class="parallax-showcase" id="parallax-showcase" aria-label="Jewelry Details Showcase">
+      
+      <!-- Parallax Background Layer -->
+      <div class="parallax-bg-layer" id="parallax-bg-layer" aria-hidden="true"></div>
+
+      <!-- Contrast Dark Tint Overlay -->
+      <div class="parallax-dark-overlay" aria-hidden="true"></div>
+
+      <!-- Top and Bottom Cream Gradient Fade Blending -->
+      <div class="parallax-edge-blend" aria-hidden="true"></div>
+
+      <!-- Centered Content -->
+      <div class="parallax-content">
+        <p class="parallax-quote">Every piece tells a story</p>
+      </div>
+
+    </section>
+
+    <!-- =======================================================================
+         Section 4A: About Section
+         ======================================================================= -->
+    <section class="about" id="about">
+      <div class="container">
+        <div class="about-grid">
+          
+          <!-- Left Column: Image with Decorative Gold Frame -->
+          <div class="about-image-col fade-slide-up">
+            <div class="about-image-wrapper">
+              <div class="about-image-frame" aria-hidden="true"></div>
+              <img 
+                src="images/about-placeholder.jpg" 
+                alt="Zivelle Jewelry Atelier Craftsmanship" 
+                class="about-img" 
+                loading="lazy">
+              <div class="about-badge">
+                <span class="about-badge-year">Est. 2026</span>
+                <span class="about-badge-text">Handcrafted Atelier</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Brand Narrative & Stat Highlights -->
+          <div class="about-content-col fade-slide-up">
+            <span class="about-kicker">Our Story</span>
+            <h2 class="about-title">Crafted With Care, Worn With Confidence</h2>
+            
+            <p class="about-intro">
+              Founded on the belief that fine jewelry should be an intimate extension of one’s elegance, 
+              <strong>Zivelle</strong> marries traditional atelier artistry with contemporary grace.
+            </p>
+
+            <div class="about-body">
+              <p>
+                Every necklace, ring, and earring in our collection begins with thoughtfully sourced materials: 
+                luminous organic freshwater pearls, hand-selected gemstones, and rich 18k gold detailing.
+              </p>
+              <p>
+                Under the creative direction of Zara, our pieces are designed not just to follow transient trends, 
+                but to be treasured heirlooms—crafted to accompany life’s most cherished celebrations and quiet everyday moments.
+              </p>
+            </div>
+
+            <!-- Stats Highlight Row -->
+            <div class="about-stats-row">
+              <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Ethically Sourced</span>
+              </div>
+              <div class="stat-divider" aria-hidden="true"></div>
+              <div class="stat-item">
+                <span class="stat-number">Handmade</span>
+                <span class="stat-label">Handpicked Pearls</span>
+              </div>
+              <div class="stat-divider" aria-hidden="true"></div>
+              <div class="stat-item">
+                <span class="stat-number">Est. 2026</span>
+                <span class="stat-label">Bespoke Atelier</span>
+              </div>
+            </div>
+
+            <!-- Founder Signoff -->
+            <div class="about-signoff">
+              <span class="about-signoff-script">Zara</span>
+              <span class="about-signoff-title">Founder &amp; Creative Director</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         Section 4B: Reviews Section
+         ======================================================================= -->
+    <section class="reviews" id="reviews">
+      <div class="container">
+        
+        <!-- Section Header -->
+        <div class="reviews-header fade-slide-up">
+          <span class="reviews-kicker">Client Testimonials</span>
+          <h2 class="reviews-title">What Our Customers Say</h2>
+          <div class="reviews-divider" aria-hidden="true">
+            <span class="reviews-divider-line"></span>
+            <span class="reviews-divider-diamond"></span>
+            <span class="reviews-divider-line"></span>
+          </div>
+          <p class="reviews-subtitle">
+            Authentic experiences from collectors and jewelry lovers who wear Zivelle.
+          </p>
+        </div>
+
+        <!-- Reviews Grid (Populated dynamically by main.js) -->
+        <div class="reviews-grid" id="reviews-grid">
+          <!-- Rendered dynamically by JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         Site Footer Section
+         ======================================================================= -->
+    <footer class="site-footer" id="contact" role="contentinfo" aria-label="Site Footer">
+      <div class="container">
+        
+        <div class="footer-grid fade-slide-up">
+          
+          <!-- Column 1: Brand -->
+          <div class="footer-col footer-col-brand">
+            <a href="#hero" class="footer-brand-logo" aria-label="Zivelle Home">
+              <span class="footer-brand-name">ZIVELLE</span>
+              <span class="footer-brand-script">by Zara</span>
+            </a>
+            <p class="footer-tagline">Timeless Elegance, by Zara</p>
+            <p class="footer-desc">
+              Handcrafted jewelry for those who cherish forever pieces. Cast in ethical 18k gold and radiant freshwater pearls.
+            </p>
+          </div>
+
+          <!-- Column 2: Quick Links -->
+          <div class="footer-col footer-col-links">
+            <h3 class="footer-heading">Quick Links</h3>
+            <ul class="footer-links-list">
+              <li><a href="#hero" class="footer-link">Home</a></li>
+              <li><a href="#shop" class="footer-link">Shop Collection</a></li>
+              <li><a href="#about" class="footer-link">Our Story</a></li>
+              <li><a href="#reviews" class="footer-link">Customer Reviews</a></li>
+              <li><a href="#contact" class="footer-link">Get in Touch</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Contact & Concierge -->
+          <div class="footer-col footer-col-contact">
+            <h3 class="footer-heading">Get in Touch</h3>
+            <ul class="footer-contact-list">
+              <li class="footer-contact-item">
+                <a href="https://wa.me/923469377256" target="_blank" rel="noopener noreferrer" class="footer-contact-link" aria-label="WhatsApp Concierge: +92 346 9377256">
+                  <svg class="footer-contact-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M17.472 14.382c-.301-.15-1.781-.879-2.057-.98-.276-.1-.477-.15-.678.15-.2.301-.778.98-.954 1.18-.176.2-.352.226-.653.075-.301-.15-1.272-.469-2.423-1.496-.896-.799-1.501-1.786-1.677-2.087-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.2-.301.3-.502.101-.201.05-.377-.025-.527-.075-.15-.678-1.633-.929-2.238-.244-.59-.492-.51-.678-.52l-.578-.01c-.2 0-.527.075-.803.376-.276.301-1.054 1.03-1.054 2.512s1.079 2.913 1.23 3.114c.15.201 2.123 3.242 5.143 4.547.718.311 1.279.497 1.716.636.721.229 1.377.197 1.895.12.577-.087 1.781-.728 2.032-1.431.251-.703.251-1.306.176-1.431-.075-.125-.276-.201-.577-.351z"/>
+                    <path d="M12.004 0C5.385 0 0 5.385 0 12.004c0 2.112.551 4.168 1.597 5.981L.069 23.513l5.688-1.492c1.748.953 3.716 1.455 5.727 1.455 6.619 0 12.004-5.385 12.004-12.004C23.988 5.385 18.623 0 12.004 0zm0 21.608c-1.879 0-3.718-.505-5.321-1.461l-.382-.227-3.957 1.038 1.056-3.858-.249-.396A9.605 9.605 0 0 1 2.4 12.004C2.4 6.708 6.708 2.4 12.004 2.4c5.296 0 9.604 4.308 9.604 9.604 0 5.296-4.308 9.604-9.604 9.604z"/>
+                  </svg>
+                  <span>+92 346 9377256</span>
+                </a>
+              </li>
+              <li class="footer-contact-item">
+                <a href="https://www.instagram.com/zivellebyzara" target="_blank" rel="noopener noreferrer" class="footer-contact-link" aria-label="Instagram: @zivellebyzara">
+                  <svg class="footer-contact-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                  <span>@zivellebyzara</span>
+                </a>
+              </li>
+              <li class="footer-contact-item footer-location-item">
+                <svg class="footer-contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>Based in Rawalpindi, Pakistan</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Stay Updated & Social -->
+          <div class="footer-col footer-col-social">
+            <h3 class="footer-heading">Stay Updated</h3>
+            <p class="footer-social-desc">
+              Follow us for new arrivals and behind-the-scenes.
+            </p>
+            <div class="footer-social-icons">
+              <a href="https://www.instagram.com/zivellebyzara" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Follow Zivelle on Instagram" title="Instagram">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </a>
+              <a href="https://wa.me/923469377256" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Message Zivelle on WhatsApp" title="WhatsApp Concierge">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M17.472 14.382c-.301-.15-1.781-.879-2.057-.98-.276-.1-.477-.15-.678.15-.2.301-.778.98-.954 1.18-.176.2-.352.226-.653.075-.301-.15-1.272-.469-2.423-1.496-.896-.799-1.501-1.786-1.677-2.087-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.2-.301.3-.502.101-.201.05-.377-.025-.527-.075-.15-.678-1.633-.929-2.238-.244-.59-.492-.51-.678-.52l-.578-.01c-.2 0-.527.075-.803.376-.276.301-1.054 1.03-1.054 2.512s1.079 2.913 1.23 3.114c.15.201 2.123 3.242 5.143 4.547.718.311 1.279.497 1.716.636.721.229 1.377.197 1.895.12.577-.087 1.781-.728 2.032-1.431.251-.703.251-1.306.176-1.431-.075-.125-.276-.201-.577-.351z"/>
+                  <path d="M12.004 0C5.385 0 0 5.385 0 12.004c0 2.112.551 4.168 1.597 5.981L.069 23.513l5.688-1.492c1.748.953 3.716 1.455 5.727 1.455 6.619 0 12.004-5.385 12.004-12.004C23.988 5.385 18.623 0 12.004 0zm0 21.608c-1.879 0-3.718-.505-5.321-1.461l-.382-.227-3.957 1.038 1.056-3.858-.249-.396A9.605 9.605 0 0 1 2.4 12.004C2.4 6.708 6.708 2.4 12.004 2.4c5.296 0 9.604 4.308 9.604 9.604 0 5.296-4.308 9.604-9.604 9.604z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Copyright & Credit Bar -->
+        <div class="footer-bottom">
+          <div class="footer-bottom-divider" aria-hidden="true"></div>
+          <div class="footer-bottom-inner">
+            <p class="footer-copyright">&copy; 2026 Zivelle. All rights reserved.</p>
+            <p class="footer-credit">Designed with care &bull; Handcrafted Atelier</p>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+
+    <!-- Placeholder anchor target for contact scroll targeting -->
+    <div id="contact-anchor" style="height: 1px;"></div>
+
+  </main>
+
+  <!-- Main JavaScript File -->
+  <script src="js/main.js"></script>
+</body>
+</html>
