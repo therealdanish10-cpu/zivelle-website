@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================================================
 
   // WhatsApp Order Phone Configuration
-  const WHATSAPP_NUMBER = "923469377256"; // Zivelle brand WhatsApp number
+  const WHATSAPP_NUMBER = "923325567320"; // Zivelle brand WhatsApp number
 
   // In-Memory Cart State
   const cart = [];
