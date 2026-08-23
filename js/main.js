@@ -271,15 +271,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnContinueShopping = document.getElementById('btn-continue-shopping');
   const toastContainer = document.getElementById('toast-container');
 
+  // Active catalog cache
+  let activeCatalog = (typeof PRODUCTS_DATA !== 'undefined') ? PRODUCTS_DATA : [];
+
   // =========================================================================
   // ===== HOMEPAGE FEATURED PRODUCTS CONTROLLER =====
   // =========================================================================
   const featuredGrid = document.getElementById('featured-products-grid');
 
-  function renderFeaturedProducts() {
-    if (!featuredGrid || typeof PRODUCTS_DATA === 'undefined') return;
-    const featuredProducts = PRODUCTS_DATA.filter((p) => p.featured);
-    featuredGrid.innerHTML = featuredProducts.map((product, idx) => {
+  async function renderFeaturedProducts() {
+    if (!featuredGrid) return;
+
+    // 1. Show skeleton cards while fetching
+    featuredGrid.innerHTML = typeof renderSkeletonCardsMarkup === 'function'
+      ? renderSkeletonCardsMarkup(4)
+      : '<div class="shop-loading-notice">Loading collection...</div>';
+
+    // 2. Fetch live data from Supabase
+    if (window.ZivelleDB && typeof window.ZivelleDB.fetchProducts === 'function') {
+      const products = await window.ZivelleDB.fetchProducts();
+      if (products && products.length > 0) {
+        activeCatalog = products;
+      }
+    }
+
+    const featuredProducts = activeCatalog.filter((p) => p.featured);
+    const displayProducts = featuredProducts.length > 0 ? featuredProducts.slice(0, 4) : activeCatalog.slice(0, 4);
+
+    featuredGrid.innerHTML = displayProducts.map((product, idx) => {
       return renderProductCardMarkup(product, idx * 160);
     }).join('');
   }
@@ -302,11 +321,27 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCategory = 'all';
   let currentSort = 'newest';
 
+  function updateSidebarCategoryCounts() {
+    if (!activeCatalog) return;
+    categoryFilterBtns.forEach((btn) => {
+      const cat = btn.getAttribute('data-category');
+      const badge = btn.querySelector('.sidebar-count-badge');
+      if (badge) {
+        if (cat === 'all') {
+          badge.textContent = activeCatalog.length;
+        } else {
+          const count = activeCatalog.filter((p) => p.category === cat).length;
+          badge.textContent = count;
+        }
+      }
+    });
+  }
+
   function updateShopProducts() {
-    if (!shopGrid || typeof PRODUCTS_DATA === 'undefined') return;
+    if (!shopGrid) return;
 
     // 1. Filter by category
-    let filtered = PRODUCTS_DATA.filter((p) => {
+    let filtered = activeCatalog.filter((p) => {
       if (currentCategory === 'all') return true;
       return p.category === currentCategory;
     });
@@ -354,10 +389,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function initShopPage() {
+  async function initShopPage() {
     if (!shopGrid) return;
 
-    // Category button clicks
+    // 1. Show skeleton cards while loading
+    shopGrid.innerHTML = typeof renderSkeletonCardsMarkup === 'function'
+      ? renderSkeletonCardsMarkup(6)
+      : '<div class="shop-loading-notice">Loading collection...</div>';
+
+    // 2. Fetch live products from Supabase
+    if (window.ZivelleDB && typeof window.ZivelleDB.fetchProducts === 'function') {
+      const products = await window.ZivelleDB.fetchProducts();
+      if (products && products.length > 0) {
+        activeCatalog = products;
+      }
+    }
+
+    // 3. Update category counts in sidebar
+    updateSidebarCategoryCounts();
+
+    // 4. Category button clicks
     categoryFilterBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         const category = btn.getAttribute('data-category') || 'all';
@@ -374,13 +425,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Sort selection change
+    // 5. Sort selection change
     shopSortSelect?.addEventListener('change', (e) => {
       currentSort = e.target.value;
       updateShopProducts();
     });
 
-    // Reset filters
+    // 6. Reset filters
     function resetAllFilters() {
       currentCategory = 'all';
       currentSort = 'newest';
@@ -406,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnClearFilters?.addEventListener('click', resetAllFilters);
     btnResetFilters?.addEventListener('click', resetAllFilters);
 
-    // Mobile filter drawer open/close
+    // 7. Mobile filter drawer open/close
     function openMobileFilterDrawer() {
       shopSidebarFilters?.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -854,8 +905,28 @@ Please let me know the next steps for payment.`;
   const reviewsNextBtn = document.getElementById('reviews-next-btn');
   const reviewsDotsContainer = document.getElementById('reviews-dots');
 
-  function renderReviews() {
+  async function renderReviews() {
     if (!reviewsTrack) return;
+
+    // 1. Initial skeleton loading placeholders
+    reviewsTrack.innerHTML = Array(3).fill(0).map(() => `
+      <div class="review-card" style="opacity: 0.6; pointer-events: none;" aria-hidden="true">
+        <div class="review-rating"><span class="star-icon">★</span><span class="star-icon">★</span><span class="star-icon">★</span><span class="star-icon">★</span><span class="star-icon">★</span></div>
+        <blockquote class="review-quote" style="color: #888;">Loading verified client experiences...</blockquote>
+        <div class="review-author-wrap">
+          <span class="review-author-name">Zivelle Collector</span>
+        </div>
+      </div>
+    `).join('');
+
+    // 2. Fetch live reviews from Supabase
+    let activeReviews = reviewsData;
+    if (window.ZivelleDB && typeof window.ZivelleDB.fetchReviews === 'function') {
+      const liveReviews = await window.ZivelleDB.fetchReviews();
+      if (liveReviews && liveReviews.length > 0) {
+        activeReviews = liveReviews;
+      }
+    }
 
     const starSvg = `
       <svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -863,8 +934,8 @@ Please let me know the next steps for payment.`;
       </svg>
     `;
 
-    reviewsTrack.innerHTML = reviewsData.map((review, idx) => {
-      const stars = Array(review.rating).fill(starSvg).join('');
+    reviewsTrack.innerHTML = activeReviews.map((review, idx) => {
+      const stars = Array(review.rating || 5).fill(starSvg).join('');
       const productBadge = review.product 
         ? `<span class="review-product-tag">Purchased: ${review.product}</span>` 
         : '';
@@ -891,18 +962,18 @@ Please let me know the next steps for payment.`;
       `;
     }).join('');
 
-    renderReviewDots();
-    initReviewsCarousel();
+    renderReviewDots(activeReviews.length);
+    initReviewsCarousel(activeReviews.length);
   }
 
-  function renderReviewDots() {
+  function renderReviewDots(count = 6) {
     if (!reviewsDotsContainer) return;
-    reviewsDotsContainer.innerHTML = reviewsData.map((_, idx) => {
+    reviewsDotsContainer.innerHTML = Array(count).fill(0).map((_, idx) => {
       return `<button type="button" class="reviews-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Go to review slide ${idx + 1}" role="tab"></button>`;
     }).join('');
   }
 
-  function initReviewsCarousel() {
+  function initReviewsCarousel(totalCount = 6) {
     if (!reviewsTrack) return;
 
     function getCardStepWidth() {
@@ -928,7 +999,7 @@ Please let me know the next steps for payment.`;
 
       // Calculate active card index
       const activeIdx = Math.min(
-        reviewsData.length - 1,
+        totalCount - 1,
         Math.max(0, Math.round(scrollLeft / cardStep))
       );
 

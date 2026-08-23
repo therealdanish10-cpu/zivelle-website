@@ -194,3 +194,27 @@ function renderProductCardMarkup(product, delayMs = 0) {
     </article>
   `;
 }
+
+/**
+ * Render loading skeleton placeholders
+ */
+function renderSkeletonCardsMarkup(count = 4) {
+  return Array(count).fill(0).map(() => `
+    <div class="product-card-skeleton" aria-hidden="true">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line price"></div>
+        <div class="skeleton-line btn"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Global window assignment
+if (typeof window !== 'undefined') {
+  window.PRODUCTS_DATA = PRODUCTS_DATA;
+  window.renderProductCardMarkup = renderProductCardMarkup;
+  window.renderSkeletonCardsMarkup = renderSkeletonCardsMarkup;
+}
