@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Zivelle by Zara — Timeless Elegance. Handcrafted luxury jewelry made to be worn forever.">
-  <meta name="theme-color" content="#f3e5d8">
-  <title>ZIVELLE — Timeless Elegance | Handcrafted Luxury Jewelry</title>
+  <meta name="description" content="Explore the full collection of Zivelle handcrafted fine jewelry — ethical 18k gold chains, rings, bracelets, and radiant freshwater pearl earrings.">
+  <title>Shop Collection | ZIVELLE — Timeless Elegance, by Zara</title>
 
-  <!-- Google Fonts Preconnect -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-
-  <!-- Favicon & App Icons -->
+  <!-- Favicon Suite -->
   <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+
+  <!-- Google Fonts: Playfair Display, Cormorant Garamond, Montserrat, Great Vibes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
@@ -24,23 +23,23 @@
 <body>
 
   <!-- =========================================================================
-       Header & Navbar
+       Section 1: Sticky Navigation Bar
        ========================================================================= -->
-  <header class="site-header" id="site-header">
-    <div class="container">
+  <header class="site-header scrolled" id="site-header">
+    <div class="container header-container">
       <nav class="navbar" aria-label="Main Navigation">
         
-        <!-- Brand Logo (Left) -->
+        <!-- Brand Logo Text -->
         <a href="index.html" class="brand-logo" aria-label="Zivelle Home">
           <span class="brand-name">ZIVELLE</span>
         </a>
 
         <!-- Navigation Links (Center / Desktop) -->
         <ul class="nav-links">
-          <li><a href="#hero" class="nav-link active">Home</a></li>
-          <li><a href="shop.html" class="nav-link">Shop</a></li>
-          <li><a href="#about" class="nav-link">About</a></li>
-          <li><a href="#reviews" class="nav-link">Reviews</a></li>
+          <li><a href="index.html#hero" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link active">Shop</a></li>
+          <li><a href="index.html#about" class="nav-link">About</a></li>
+          <li><a href="index.html#reviews" class="nav-link">Reviews</a></li>
           <li><a href="#contact" class="nav-link">Contact</a></li>
         </ul>
 
@@ -95,10 +94,10 @@
       </div>
 
       <ul class="drawer-nav-list">
-        <li><a href="#hero" class="drawer-nav-link active">Home</a></li>
-        <li><a href="shop.html" class="drawer-nav-link">Shop Collection</a></li>
-        <li><a href="#about" class="drawer-nav-link">Our Story</a></li>
-        <li><a href="#reviews" class="drawer-nav-link">Client Reviews</a></li>
+        <li><a href="index.html#hero" class="drawer-nav-link">Home</a></li>
+        <li><a href="shop.html" class="drawer-nav-link active">Shop Collection</a></li>
+        <li><a href="index.html#about" class="drawer-nav-link">Our Story</a></li>
+        <li><a href="index.html#reviews" class="drawer-nav-link">Client Reviews</a></li>
         <li><a href="#contact" class="drawer-nav-link">Contact & Concierge</a></li>
       </ul>
     </div>
@@ -108,14 +107,14 @@
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12.004 0C5.385 0 0 5.385 0 12.004c0 2.112.551 4.168 1.597 5.981L.069 23.513l5.688-1.492c1.748.953 3.716 1.455 5.727 1.455 6.619 0 12.004-5.385 12.004-12.004C23.988 5.385 18.623 0 12.004 0z"/>
         </svg>
-        <span>WhatsApp Concierge: +92 332 5567320</span>
+        <span>+92 332 5567320</span>
       </a>
-      <p style="font-size: 0.75rem; color: #888; letter-spacing: 0.05em;">Handcrafted Luxury &bull; Timeless Elegance</p>
+      <p class="drawer-tagline">Timeless Elegance &bull; Handcrafted in Pakistan</p>
     </div>
   </aside>
 
   <!-- =========================================================================
-       Cart Slide-in Drawer & WhatsApp Checkout
+       Section 3: Slide-in Cart Drawer with Delivery Details & WhatsApp Checkout
        ========================================================================= -->
   <div class="cart-backdrop" id="cart-backdrop" aria-hidden="true"></div>
 
@@ -124,8 +123,8 @@
     <!-- Drawer Header -->
     <div class="cart-drawer-header">
       <div class="cart-drawer-title-group">
-        <h2 class="cart-drawer-title">Your Bag</h2>
-        <span class="cart-drawer-count-badge" id="cart-drawer-count">0 items</span>
+        <h2 class="cart-drawer-title">Shopping Bag</h2>
+        <span class="cart-drawer-count" id="cart-drawer-count">(0 items)</span>
       </div>
       <button type="button" class="cart-drawer-close-btn" id="cart-drawer-close" aria-label="Close shopping bag">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -249,103 +248,144 @@
   </aside>
 
   <!-- =========================================================================
-       Main Content
+       Main Content Area
        ========================================================================= -->
   <main>
     
-    <!-- Hero Section -->
-    <section class="hero-section" id="hero">
-      
-      <!-- Background Video -->
-      <div class="hero-video-container">
-        <video 
-          class="hero-video" 
-          autoplay 
-          muted 
-          loop 
-          playsinline 
-          preload="auto"
-          aria-hidden="true">
-          <source src="videos/hero-pearls.mp4" type="video/mp4">
-          Your browser does not support HTML5 video.
-        </video>
-      </div>
-
-      <!-- Contrast Overlay Gradient -->
-      <div class="hero-overlay" aria-hidden="true"></div>
-
-      <!-- Hero Centered Content -->
-      <div class="hero-content">
-        
-        <!-- Small Uppercase Kicker -->
-        <span class="hero-kicker">TIMELESS ELEGANCE</span>
-
-        <!-- Large Headline + Script Accent -->
-        <div class="hero-title-group">
-          <h1 class="hero-title">ZIVELLE</h1>
-          <span class="hero-script-accent">by Zara</span>
+    <!-- Dedicated Shop Hero / Heading -->
+    <section class="shop-page-hero">
+      <div class="container">
+        <span class="shop-page-kicker">EXCLUSIVE ATELIER</span>
+        <h1 class="shop-page-title">Our Full Collection</h1>
+        <div class="shop-page-divider" aria-hidden="true">
+          <span class="shop-page-divider-line"></span>
+          <span class="shop-page-divider-diamond"></span>
+          <span class="shop-page-divider-line"></span>
         </div>
-
-        <!-- Short Subtext -->
-        <p class="hero-subtext">Handcrafted jewelry, made to be worn forever.</p>
-
-        <!-- CTA Button -->
-        <a href="#shop" class="hero-cta">
-          <span>Shop Now</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </a>
-
+        <p class="shop-page-subtitle">
+          Explore handcrafted timeless treasures cast in ethical 18k gold, lustrous freshwater pearls, and brilliant gems.
+        </p>
       </div>
-
-      <!-- Scroll Down Indicator -->
-      <a href="#shop" class="scroll-indicator" aria-label="Scroll down to view collection">
-        <span class="scroll-indicator-text">Explore</span>
-        <svg class="scroll-indicator-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </a>
-
     </section>
 
-    <!-- =======================================================================
-         Featured Collection Preview Section
-         ======================================================================= -->
-    <section class="shop" id="shop">
+    <!-- Dedicated Shop Layout Section -->
+    <section class="shop-page-section">
       <div class="container">
-        
-        <!-- Section Header -->
-        <div class="shop-header fade-slide-up">
-          <span class="shop-kicker">Curated Atelier</span>
-          <h2 class="shop-title">Our Collection</h2>
-          <div class="shop-divider" aria-hidden="true">
-            <span class="shop-divider-line"></span>
-            <span class="shop-divider-diamond"></span>
-            <span class="shop-divider-line"></span>
+        <div class="shop-page-layout">
+          
+          <!-- Left Filter Sidebar / Mobile Drawer -->
+          <aside class="shop-sidebar-filters" id="shop-sidebar-filters" aria-label="Product Catalog Filters">
+            
+            <!-- Mobile Drawer Header -->
+            <div class="mobile-filter-drawer-header">
+              <h2 class="mobile-filter-drawer-title">Filters &amp; Sort</h2>
+              <button type="button" class="mobile-filter-drawer-close" id="mobile-filter-drawer-close" aria-label="Close filters">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Filter Group: Categories -->
+            <div class="filter-group">
+              <h3 class="filter-group-title">
+                <span>Categories</span>
+              </h3>
+              <div class="sidebar-category-list" role="tablist" aria-label="Filter categories">
+                <button type="button" class="sidebar-category-btn active" data-category="all">
+                  <span>All Pieces</span>
+                  <span class="sidebar-count-badge">8</span>
+                </button>
+                <button type="button" class="sidebar-category-btn" data-category="chains">
+                  <span>Chains</span>
+                  <span class="sidebar-count-badge">2</span>
+                </button>
+                <button type="button" class="sidebar-category-btn" data-category="bracelets">
+                  <span>Bracelets</span>
+                  <span class="sidebar-count-badge">2</span>
+                </button>
+                <button type="button" class="sidebar-category-btn" data-category="rings">
+                  <span>Rings</span>
+                  <span class="sidebar-count-badge">2</span>
+                </button>
+                <button type="button" class="sidebar-category-btn" data-category="earrings">
+                  <span>Earrings</span>
+                  <span class="sidebar-count-badge">2</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter Group: Sort Options -->
+            <div class="filter-group">
+              <h3 class="filter-group-title">
+                <span>Sort By</span>
+              </h3>
+              <select class="shop-sort-select" id="shop-sort-select" aria-label="Sort product catalog">
+                <option value="newest">Newest First</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="name-asc">Name: A to Z</option>
+              </select>
+            </div>
+
+            <!-- Clear Filters Action -->
+            <div class="filter-actions">
+              <button type="button" class="btn-clear-filters" id="btn-clear-filters">
+                <span>Clear All Filters</span>
+              </button>
+            </div>
+
+          </aside>
+
+          <!-- Main Products Content Area -->
+          <div class="shop-main-content">
+            
+            <!-- Top Toolbar -->
+            <div class="shop-toolbar">
+              <button type="button" class="btn-mobile-filter-trigger" id="btn-mobile-filter-trigger" aria-label="Open filter options">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                <span>Filters &amp; Sort</span>
+                <span class="filter-active-indicator" id="filter-active-indicator" style="display: none;">0</span>
+              </button>
+
+              <div class="shop-results-count" id="shop-results-count">
+                Showing <strong>8</strong> products
+              </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="shop-products-grid" id="shop-products-grid">
+              <!-- Rendered dynamically by JavaScript from PRODUCTS_DATA -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="shop-empty-state" id="shop-empty-state">
+              <svg class="shop-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+              <h3 class="shop-empty-title">No products found</h3>
+              <p class="shop-empty-desc">No jewelry pieces match your selected filter criteria. Try resetting the filters to explore all creations.</p>
+              <button type="button" class="btn-reset-filters" id="btn-reset-filters">
+                <span>Reset Filters</span>
+              </button>
+            </div>
+
           </div>
-          <p class="shop-subtitle">
-            A curated glimpse into our handcrafted fine jewelry collection. Explore the complete atelier on our shop page.
-          </p>
-        </div>
 
-        <!-- Responsive Featured Products Grid -->
-        <div class="products-grid" id="featured-products-grid">
-          <!-- Rendered dynamically by JavaScript from PRODUCTS_DATA -->
         </div>
-
-        <!-- View All Products CTA Button -->
-        <div class="shop-view-all-wrap fade-slide-up">
-          <a href="shop.html" class="btn-view-all-products" aria-label="View all handcrafted jewelry products">
-            <span>View All Products</span>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-
       </div>
     </section>
 
@@ -353,144 +393,22 @@
     <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <!-- =======================================================================
-         Parallax Jewelry Showcase Section
+         Section: Luxury Site Footer
          ======================================================================= -->
-    <section class="parallax-showcase" id="parallax-showcase" aria-label="Jewelry Details Showcase">
-      
-      <!-- Parallax Background Layer -->
-      <div class="parallax-bg-layer" id="parallax-bg-layer" aria-hidden="true"></div>
-
-      <!-- Contrast Dark Tint Overlay -->
-      <div class="parallax-dark-overlay" aria-hidden="true"></div>
-
-      <!-- Top and Bottom Cream Gradient Fade Blending -->
-      <div class="parallax-edge-blend" aria-hidden="true"></div>
-
-      <!-- Centered Content -->
-      <div class="parallax-content">
-        <p class="parallax-quote">Every piece tells a story</p>
-      </div>
-
-    </section>
-
-    <!-- =======================================================================
-         Section 4A: About Section
-         ======================================================================= -->
-    <section class="about" id="about">
-      <div class="container">
-        <div class="about-grid">
-          
-          <!-- Left Column: Image with Decorative Gold Frame -->
-          <div class="about-image-col fade-slide-up">
-            <div class="about-image-wrapper">
-              <div class="about-image-frame" aria-hidden="true"></div>
-              <img 
-                src="images/about-placeholder.jpg" 
-                alt="Zivelle Jewelry Atelier Craftsmanship" 
-                class="about-img" 
-                loading="lazy">
-              <div class="about-badge">
-                <span class="about-badge-year">Est. 2026</span>
-                <span class="about-badge-text">Handcrafted Atelier</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column: Brand Narrative & Stat Highlights -->
-          <div class="about-content-col fade-slide-up">
-            <span class="about-kicker">Our Story</span>
-            <h2 class="about-title">Crafted With Care, Worn With Confidence</h2>
-            
-            <p class="about-intro">
-              Founded on the belief that fine jewelry should be an intimate extension of one’s elegance, 
-              <strong>Zivelle</strong> marries traditional atelier artistry with contemporary grace.
-            </p>
-
-            <div class="about-body">
-              <p>
-                Every necklace, ring, and earring in our collection begins with thoughtfully sourced materials: 
-                luminous organic freshwater pearls, hand-selected gemstones, and rich 18k gold detailing.
-              </p>
-              <p>
-                Under the creative direction of Zara, our pieces are designed not just to follow transient trends, 
-                but to be treasured heirlooms—crafted to accompany life’s most cherished celebrations and quiet everyday moments.
-              </p>
-            </div>
-
-            <!-- Stats Highlight Row -->
-            <div class="about-stats-row">
-              <div class="stat-item">
-                <span class="stat-number">100%</span>
-                <span class="stat-label">Ethically Sourced</span>
-              </div>
-              <div class="stat-divider" aria-hidden="true"></div>
-              <div class="stat-item">
-                <span class="stat-number">Handmade</span>
-                <span class="stat-label">Handpicked Pearls</span>
-              </div>
-              <div class="stat-divider" aria-hidden="true"></div>
-              <div class="stat-item">
-                <span class="stat-number">Est. 2026</span>
-                <span class="stat-label">Bespoke Atelier</span>
-              </div>
-            </div>
-
-            <!-- Founder Signoff -->
-            <div class="about-signoff">
-              <span class="about-signoff-script">Zara</span>
-              <span class="about-signoff-title">Founder &amp; Creative Director</span>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =======================================================================
-         Section 4B: Reviews Section
-         ======================================================================= -->
-    <section class="reviews" id="reviews">
-      <div class="container">
+    <footer class="site-footer" id="contact">
+      <div class="container footer-container">
         
-        <!-- Section Header -->
-        <div class="reviews-header fade-slide-up">
-          <span class="reviews-kicker">Client Testimonials</span>
-          <h2 class="reviews-title">What Our Customers Say</h2>
-          <div class="reviews-divider" aria-hidden="true">
-            <span class="reviews-divider-line"></span>
-            <span class="reviews-divider-diamond"></span>
-            <span class="reviews-divider-line"></span>
-          </div>
-          <p class="reviews-subtitle">
-            Authentic experiences from collectors and jewelry lovers who wear Zivelle.
-          </p>
-        </div>
-
-        <!-- Reviews Grid (Populated dynamically by main.js) -->
-        <div class="reviews-grid" id="reviews-grid">
-          <!-- Rendered dynamically by JavaScript -->
-        </div>
-
-      </div>
-    </section>
-
-    <!-- =======================================================================
-         Site Footer Section
-         ======================================================================= -->
-    <footer class="site-footer" id="contact" role="contentinfo" aria-label="Site Footer">
-      <div class="container">
-        
-        <div class="footer-grid fade-slide-up">
+        <!-- Main Footer 4-Column Grid -->
+        <div class="footer-grid">
           
           <!-- Column 1: Brand -->
           <div class="footer-col footer-col-brand">
-            <a href="index.html" class="footer-brand-logo" aria-label="Zivelle Home">
+            <a href="index.html" class="footer-logo" aria-label="Zivelle Home">
               <span class="footer-brand-name">ZIVELLE</span>
-              <span class="footer-brand-script">by Zara</span>
             </a>
             <p class="footer-tagline">Timeless Elegance, by Zara</p>
-            <p class="footer-desc">
-              Handcrafted jewelry for those who cherish forever pieces. Cast in ethical 18k gold and radiant freshwater pearls.
+            <p class="footer-brand-desc">
+              Handcrafted jewelry for those who cherish forever pieces.
             </p>
           </div>
 
@@ -498,10 +416,10 @@
           <div class="footer-col footer-col-links">
             <h3 class="footer-heading">Quick Links</h3>
             <ul class="footer-links-list">
-              <li><a href="#hero" class="footer-link">Home</a></li>
+              <li><a href="index.html#hero" class="footer-link">Home</a></li>
               <li><a href="shop.html" class="footer-link">Shop Collection</a></li>
-              <li><a href="#about" class="footer-link">Our Story</a></li>
-              <li><a href="#reviews" class="footer-link">Customer Reviews</a></li>
+              <li><a href="index.html#about" class="footer-link">Our Story</a></li>
+              <li><a href="index.html#reviews" class="footer-link">Customer Reviews</a></li>
               <li><a href="#contact" class="footer-link">Get in Touch</a></li>
             </ul>
           </div>
