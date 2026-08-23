@@ -300,14 +300,6 @@
 
       </div>
 
-      <!-- Scroll Down Indicator -->
-      <a href="#shop" class="scroll-indicator" aria-label="Scroll down to view collection">
-        <span class="scroll-indicator-text">Explore</span>
-        <svg class="scroll-indicator-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </a>
-
     </section>
 
     <!-- =======================================================================
@@ -466,8 +458,32 @@
           </p>
         </div>
 
-        <!-- Reviews Grid (Populated dynamically by main.js) -->
-        <div class="reviews-grid" id="reviews-grid">
+        <!-- Reviews Horizontal Carousel Container -->
+        <div class="reviews-carousel-wrapper fade-slide-up" aria-label="Customer Reviews Carousel">
+          
+          <!-- Prev Button -->
+          <button type="button" class="reviews-nav-btn reviews-nav-prev" id="reviews-prev-btn" aria-label="Previous review">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          <!-- Horizontal Scroll Track -->
+          <div class="reviews-carousel-track" id="reviews-carousel-track" tabindex="0" role="region" aria-label="Customer reviews slider">
+            <!-- Rendered dynamically by JavaScript -->
+          </div>
+
+          <!-- Next Button -->
+          <button type="button" class="reviews-nav-btn reviews-nav-next" id="reviews-next-btn" aria-label="Next review">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+        </div>
+
+        <!-- Dot Indicators -->
+        <div class="reviews-dots" id="reviews-dots" aria-label="Reviews pagination" role="tablist">
           <!-- Rendered dynamically by JavaScript -->
         </div>
 

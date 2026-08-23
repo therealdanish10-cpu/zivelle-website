@@ -26,8 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const drawerLinks = document.querySelectorAll('.drawer-nav-link');
   const navLinks = document.querySelectorAll('.nav-link');
   const heroVideo = document.querySelector('.hero-video');
-  const scrollIndicator = document.querySelector('.scroll-indicator');
-
   const heroSection = document.querySelector('.hero-section');
 
   // -------------------------------------------------------------------------
@@ -810,7 +808,7 @@ Please let me know the next steps for payment.`;
   }
 
   // =========================================================================
-  // ===== SECTION 4: REVIEWS DATA & RENDERING =====
+  // ===== SECTION 4: REVIEWS CAROUSEL LOGIC & RENDERING =====
   // =========================================================================
   const reviewsData = [
     {
@@ -851,9 +849,13 @@ Please let me know the next steps for payment.`;
     }
   ];
 
+  const reviewsTrack = document.getElementById('reviews-carousel-track');
+  const reviewsPrevBtn = document.getElementById('reviews-prev-btn');
+  const reviewsNextBtn = document.getElementById('reviews-next-btn');
+  const reviewsDotsContainer = document.getElementById('reviews-dots');
+
   function renderReviews() {
-    const reviewsGrid = document.getElementById('reviews-grid');
-    if (!reviewsGrid) return;
+    if (!reviewsTrack) return;
 
     const starSvg = `
       <svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -861,14 +863,14 @@ Please let me know the next steps for payment.`;
       </svg>
     `;
 
-    reviewsGrid.innerHTML = reviewsData.map((review) => {
+    reviewsTrack.innerHTML = reviewsData.map((review, idx) => {
       const stars = Array(review.rating).fill(starSvg).join('');
       const productBadge = review.product 
         ? `<span class="review-product-tag">Purchased: ${review.product}</span>` 
         : '';
 
       return `
-        <article class="review-card">
+        <article class="review-card is-visible" data-index="${idx}">
           <div class="review-rating" aria-label="${review.rating} out of 5 stars">
             ${stars}
           </div>
@@ -888,6 +890,94 @@ Please let me know the next steps for payment.`;
         </article>
       `;
     }).join('');
+
+    renderReviewDots();
+    initReviewsCarousel();
+  }
+
+  function renderReviewDots() {
+    if (!reviewsDotsContainer) return;
+    reviewsDotsContainer.innerHTML = reviewsData.map((_, idx) => {
+      return `<button type="button" class="reviews-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Go to review slide ${idx + 1}" role="tab"></button>`;
+    }).join('');
+  }
+
+  function initReviewsCarousel() {
+    if (!reviewsTrack) return;
+
+    function getCardStepWidth() {
+      const firstCard = reviewsTrack.querySelector('.review-card');
+      if (!firstCard) return 320;
+      const trackStyle = window.getComputedStyle(reviewsTrack);
+      const gap = parseFloat(trackStyle.gap) || 24;
+      return firstCard.offsetWidth + gap;
+    }
+
+    function updateNavAndDots() {
+      const scrollLeft = reviewsTrack.scrollLeft;
+      const maxScrollLeft = reviewsTrack.scrollWidth - reviewsTrack.clientWidth;
+      const cardStep = getCardStepWidth();
+
+      // Update arrow disabled states
+      if (reviewsPrevBtn) {
+        reviewsPrevBtn.disabled = scrollLeft <= 8;
+      }
+      if (reviewsNextBtn) {
+        reviewsNextBtn.disabled = scrollLeft >= maxScrollLeft - 8;
+      }
+
+      // Calculate active card index
+      const activeIdx = Math.min(
+        reviewsData.length - 1,
+        Math.max(0, Math.round(scrollLeft / cardStep))
+      );
+
+      const dots = reviewsDotsContainer?.querySelectorAll('.reviews-dot');
+      dots?.forEach((dot, idx) => {
+        if (idx === activeIdx) {
+          dot.classList.add('active');
+          dot.setAttribute('aria-selected', 'true');
+        } else {
+          dot.classList.remove('active');
+          dot.setAttribute('aria-selected', 'false');
+        }
+      });
+    }
+
+    // Debounced or requestAnimationFrame scroll update
+    let isScrollTicking = false;
+    reviewsTrack.addEventListener('scroll', () => {
+      if (!isScrollTicking) {
+        window.requestAnimationFrame(() => {
+          updateNavAndDots();
+          isScrollTicking = false;
+        });
+        isScrollTicking = true;
+      }
+    }, { passive: true });
+
+    // Arrow button click handlers
+    reviewsPrevBtn?.addEventListener('click', () => {
+      const cardStep = getCardStepWidth();
+      reviewsTrack.scrollBy({ left: -cardStep, behavior: 'smooth' });
+    });
+
+    reviewsNextBtn?.addEventListener('click', () => {
+      const cardStep = getCardStepWidth();
+      reviewsTrack.scrollBy({ left: cardStep, behavior: 'smooth' });
+    });
+
+    // Dot click handlers
+    reviewsDotsContainer?.addEventListener('click', (e) => {
+      const dot = e.target.closest('.reviews-dot');
+      if (!dot) return;
+      const idx = parseInt(dot.getAttribute('data-index'), 10);
+      const cardStep = getCardStepWidth();
+      reviewsTrack.scrollTo({ left: idx * cardStep, behavior: 'smooth' });
+    });
+
+    // Initial update
+    updateNavAndDots();
   }
 
   // =========================================================================
@@ -958,9 +1048,9 @@ Please let me know the next steps for payment.`;
     }
   }
 
-  // 2. Individual Card Scroll Observer (Product Grid & Reviews Grid)
+  // 2. Individual Card Scroll Observer (Product Grid)
   function initCardObservers() {
-    const cards = document.querySelectorAll('.product-card, .review-card');
+    const cards = document.querySelectorAll('.product-card');
 
     if ('IntersectionObserver' in window) {
       const cardObserver = new IntersectionObserver((entries, obs) => {
