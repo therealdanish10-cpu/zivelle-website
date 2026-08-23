@@ -843,6 +843,11 @@ ol {
   transition: opacity 0.3s ease;
 }
 
+/* Featured Products Dots Indicator (Hidden on Desktop & Tablet by default) */
+.featured-dots-container {
+  display: none;
+}
+
 /* Product Card */
 .product-card {
   background-color: var(--color-white);
@@ -2250,6 +2255,63 @@ ol {
 
 /* Mobile screens (max-width: 768px) */
 @media (max-width: 768px) {
+  /* Featured Products Mobile-Only Horizontal Swipeable Carousel */
+  #featured-products-grid.featured-products-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding-left: 0.25rem;
+    padding-right: 1.5rem;
+    padding-bottom: 0.5rem;
+    width: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #featured-products-grid.featured-products-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  #featured-products-grid.featured-products-track .product-card {
+    flex: 0 0 78%;
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .featured-dots-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .featured-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(201, 162, 94, 0.3);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .featured-dot:hover {
+    background-color: rgba(201, 162, 94, 0.6);
+  }
+
+  .featured-dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background-color: var(--color-gold);
+  }
+
   .reviews-nav-btn {
     display: none;
   }

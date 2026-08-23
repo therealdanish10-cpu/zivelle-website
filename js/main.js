@@ -306,6 +306,111 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== HOMEPAGE FEATURED PRODUCTS CONTROLLER =====
   // =========================================================================
   const featuredGrid = document.getElementById('featured-products-grid');
+  const featuredDotsContainer = document.getElementById('featured-dots');
+
+  function getFeaturedCardStepWidth() {
+    const firstCard = featuredGrid?.querySelector('.product-card');
+    if (!firstCard) return 280;
+    const gridStyle = window.getComputedStyle(featuredGrid);
+    const gap = parseFloat(gridStyle.gap) || 16;
+    return firstCard.offsetWidth + gap;
+  }
+
+  function getFeaturedDistinctPositions() {
+    if (!featuredGrid) return 4;
+    const maxScrollLeft = featuredGrid.scrollWidth - featuredGrid.clientWidth;
+    const cardStep = getFeaturedCardStepWidth();
+    if (maxScrollLeft <= 0 || cardStep <= 0) return 1;
+    const positions = Math.round(maxScrollLeft / cardStep) + 1;
+    return Math.max(1, positions);
+  }
+
+  function renderFeaturedDots() {
+    if (!featuredDotsContainer || !featuredGrid) return;
+
+    // Only display dots on mobile viewport (<= 768px)
+    if (window.innerWidth > 768) {
+      featuredDotsContainer.innerHTML = '';
+      return;
+    }
+
+    const count = getFeaturedDistinctPositions();
+    featuredDotsContainer.innerHTML = Array(count).fill(0).map((_, idx) => {
+      return `<button type="button" class="featured-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Go to featured product slide ${idx + 1}" role="tab"></button>`;
+    }).join('');
+  }
+
+  function initFeaturedMobileCarousel() {
+    if (!featuredGrid) return;
+
+    function updateFeaturedDots() {
+      if (window.innerWidth > 768) return;
+
+      const scrollLeft = featuredGrid.scrollLeft;
+      const clientWidth = featuredGrid.clientWidth;
+      const scrollWidth = featuredGrid.scrollWidth;
+      const maxScrollLeft = scrollWidth - clientWidth;
+      const cardStep = getFeaturedCardStepWidth();
+
+      const isAtEnd = maxScrollLeft <= 0 || (scrollLeft + clientWidth >= scrollWidth - 10);
+      const isAtStart = scrollLeft <= 8;
+
+      const dots = featuredDotsContainer?.querySelectorAll('.featured-dot');
+      const numDots = dots ? dots.length : 0;
+      if (numDots === 0) return;
+
+      let activeIdx = 0;
+      if (isAtEnd) {
+        activeIdx = numDots - 1; // Force the last dot active when scrolled to the end
+      } else if (isAtStart) {
+        activeIdx = 0;
+      } else {
+        activeIdx = Math.min(numDots - 1, Math.max(0, Math.round(scrollLeft / cardStep)));
+      }
+
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === activeIdx);
+      });
+    }
+
+    // Scroll listener on featured carousel
+    featuredGrid.addEventListener('scroll', () => {
+      window.requestAnimationFrame(updateFeaturedDots);
+    }, { passive: true });
+
+    // Interactive dot click listener
+    featuredDotsContainer?.addEventListener('click', (e) => {
+      const dot = e.target.closest('.featured-dot');
+      if (!dot) return;
+
+      const idx = parseInt(dot.getAttribute('data-index'), 10) || 0;
+      const cardStep = getFeaturedCardStepWidth();
+      const numDots = featuredDotsContainer.querySelectorAll('.featured-dot').length;
+
+      let targetScroll = idx * cardStep;
+      if (idx === numDots - 1) {
+        targetScroll = featuredGrid.scrollWidth - featuredGrid.clientWidth;
+      }
+
+      featuredGrid.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+    });
+
+    // Window resize listener to generate or clear dots dynamically
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768) {
+        renderFeaturedDots();
+        updateFeaturedDots();
+      } else if (featuredDotsContainer) {
+        featuredDotsContainer.innerHTML = '';
+      }
+    });
+
+    renderFeaturedDots();
+    updateFeaturedDots();
+  }
 
   async function renderFeaturedProducts() {
     if (!featuredGrid) return;
@@ -332,6 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attach IntersectionObserver immediately after cards are inserted into the DOM
     initCardObservers();
+
+    // Initialize Mobile Carousel & Dots Indicator
+    renderFeaturedDots();
+    initFeaturedMobileCarousel();
   }
 
   // =========================================================================
