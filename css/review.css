@@ -1,0 +1,325 @@
+/* ==========================================================================
+   ZIVELLE — Customer Review Submission Page (css/review.css)
+   ========================================================================== */
+
+.review-page-body {
+  background-color: var(--color-cream-light, #fbf9f6);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-black, #1a1a1a);
+  font-family: var(--font-sans, 'Montserrat', sans-serif);
+}
+
+.review-page-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.25rem 4rem;
+}
+
+.review-card-container {
+  width: 100%;
+  max-width: 580px;
+  background-color: #ffffff;
+  border: 1px solid rgba(201, 162, 94, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(26, 26, 26, 0.06);
+  padding: 2.5rem 2.25rem;
+  margin: 0 auto;
+  position: relative;
+}
+
+@media (max-width: 480px) {
+  .review-card-container {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* Header Branding */
+.review-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.review-brand-kicker {
+  display: block;
+  font-size: 0.725rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8c6a2d;
+  margin-bottom: 0.4rem;
+}
+
+.review-brand-logo {
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.review-header-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1rem auto 1.25rem;
+  max-width: 160px;
+}
+
+.review-divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: rgba(201, 162, 94, 0.5);
+}
+
+.review-divider-diamond {
+  width: 5px;
+  height: 5px;
+  background-color: #c9a25e;
+  transform: rotate(45deg);
+}
+
+.review-welcome-title {
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.review-welcome-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #555555;
+  margin: 0;
+}
+
+/* Star Rating Control */
+.star-rating-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  padding: 1.25rem;
+  background-color: #fbf9f6;
+  border-radius: 6px;
+  border: 1px solid rgba(232, 196, 176, 0.5);
+}
+
+.star-rating-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+}
+
+.star-rating-stars {
+  display: flex;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.15s ease;
+}
+
+.star-btn:hover,
+.star-btn:focus-visible {
+  transform: scale(1.18);
+}
+
+.star-btn svg {
+  width: 32px;
+  height: 32px;
+  fill: #e0d8ce;
+  stroke: #c9a25e;
+  stroke-width: 1.2;
+  transition: fill 0.15s ease, transform 0.15s ease;
+}
+
+.star-btn.is-active svg,
+.star-btn.is-hovered svg {
+  fill: #c9a25e;
+}
+
+.star-rating-text {
+  margin-top: 0.6rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #8c6a2d;
+}
+
+/* Form Fields */
+.review-form-group {
+  margin-bottom: 1.35rem;
+}
+
+.review-form-label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  margin-bottom: 0.45rem;
+}
+
+.review-form-input,
+.review-form-textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background-color: #ffffff;
+  border: 1.5px solid #d4c5b9;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.925rem;
+  color: #1a1a1a;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-form-input:focus,
+.review-form-textarea:focus {
+  border-color: #c9a25e;
+  box-shadow: 0 0 0 3px rgba(201, 162, 94, 0.2);
+}
+
+.review-form-textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.review-form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: #777777;
+  margin-top: 0.35rem;
+}
+
+/* Submit Button */
+.btn-submit-review {
+  width: 100%;
+  padding: 1rem;
+  background-color: #c9a25e;
+  color: #1a1a1a;
+  border: 1.5px solid #b38e4a;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(201, 162, 94, 0.25);
+}
+
+.btn-submit-review:hover:not(:disabled) {
+  background-color: #b38e4a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(201, 162, 94, 0.35);
+}
+
+.btn-submit-review:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Thank You Success Card */
+.review-success-card {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.review-success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  background-color: rgba(201, 162, 94, 0.15);
+  border: 2px solid #c9a25e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8c6a2d;
+}
+
+.review-success-title {
+  font-family: var(--font-serif, 'Playfair Display', serif);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+}
+
+.review-success-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 2rem;
+}
+
+.btn-return-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  background-color: #1a1a1a;
+  color: #f3e5d8;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-return-home:hover {
+  background-color: #c9a25e;
+  color: #1a1a1a;
+  border-color: #c9a25e;
+}
+
+/* Alert Box */
+.review-alert {
+  padding: 0.85rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #f87171;
+  color: #991b1b;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

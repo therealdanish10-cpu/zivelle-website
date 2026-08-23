@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZIVELLE | Share Your Experience</title>
+  <meta name="description" content="Share your experience wearing handcrafted fine jewelry from Zivelle. Your feedback helps other collectors discover timeless elegance.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Fonts Preconnect & Stylesheets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+
+  <!-- Site Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/review.css">
+</head>
+<body class="review-page-body">
+
+  <main class="review-page-main">
+    <div class="review-card-container">
+      
+      <!-- Top Brand Header -->
+      <header class="review-header">
+        <span class="review-brand-kicker">Client Feedback</span>
+        <h1 class="review-brand-logo">ZIVELLE</h1>
+        <div class="review-header-divider" aria-hidden="true">
+          <span class="review-divider-line"></span>
+          <span class="review-divider-diamond"></span>
+          <span class="review-divider-line"></span>
+        </div>
+      </header>
+
+      <!-- A. Review Submission Form Card -->
+      <section class="review-form-card" id="review-form-card" aria-label="Submit Customer Review">
+        
+        <div style="text-align: center; margin-bottom: 1.75rem;">
+          <h2 class="review-welcome-title">Share Your Experience</h2>
+          <p class="review-welcome-desc">
+            We'd love to hear about your experience! Your review helps other customers discover Zivelle.
+          </p>
+        </div>
+
+        <!-- Alert Notification Box -->
+        <div class="review-alert review-alert-error" id="review-alert" style="display: none;" role="alert">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="review-alert-text">Please complete all required fields.</span>
+        </div>
+
+        <form id="customer-review-form" novalidate>
+          <input type="hidden" id="review-rating" value="5">
+
+          <!-- Interactive Star Rating -->
+          <div class="star-rating-group">
+            <span class="star-rating-label">Overall Rating *</span>
+            <div class="star-rating-stars" role="radiogroup" aria-label="Rating from 1 to 5 stars">
+              <button type="button" class="star-btn is-active" data-value="1" aria-label="1 star">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </button>
+              <button type="button" class="star-btn is-active" data-value="2" aria-label="2 stars">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </button>
+              <button type="button" class="star-btn is-active" data-value="3" aria-label="3 stars">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </button>
+              <button type="button" class="star-btn is-active" data-value="4" aria-label="4 stars">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </button>
+              <button type="button" class="star-btn is-active" data-value="5" aria-label="5 stars">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              </button>
+            </div>
+            <span class="star-rating-text" id="star-rating-text">5 Stars — Exceptional</span>
+          </div>
+
+          <!-- Customer Name Field -->
+          <div class="review-form-group">
+            <label for="review-name" class="review-form-label">Your Name *</label>
+            <input 
+              type="text" 
+              id="review-name" 
+              class="review-form-input" 
+              placeholder="e.g. Ayesha K." 
+              required 
+              autocomplete="name">
+          </div>
+
+          <!-- Product Purchased Field (Optional) -->
+          <div class="review-form-group">
+            <label for="review-product" class="review-form-label">Product Purchased <span style="color: #777; font-weight: normal;">(Optional)</span></label>
+            <input 
+              type="text" 
+              id="review-product" 
+              class="review-form-input" 
+              placeholder="e.g. Celestial Tennis Bracelet, Baroque Pearl Chain">
+            <small class="review-form-hint">Mention the jewelry piece you ordered so other collectors know which piece you're reviewing.</small>
+          </div>
+
+          <!-- Review Textarea Field -->
+          <div class="review-form-group">
+            <label for="review-text" class="review-form-label">Your Review *</label>
+            <textarea 
+              id="review-text" 
+              class="review-form-textarea" 
+              rows="4" 
+              placeholder="Tell us about the craftsmanship, sparkle, comfort, and packaging..." 
+              required></textarea>
+          </div>
+
+          <!-- Submit Action Button -->
+          <button type="submit" class="btn-submit-review" id="btn-submit-review">
+            <span class="btn-text">Submit Review</span>
+            <div class="btn-spinner" style="display: none;" aria-hidden="true"></div>
+          </button>
+        </form>
+
+      </section>
+
+      <!-- B. Thank-You Confirmation State (Replaces form on success) -->
+      <section class="review-success-card" id="review-success-card" style="display: none;" aria-label="Review Submission Confirmation">
+        <div class="review-success-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2 class="review-success-title">Thank You for Your Feedback!</h2>
+        <p class="review-success-text">
+          Your review will appear on our site soon. We appreciate you being part of the Zivelle family.
+        </p>
+        <a href="index.html" class="btn-return-home">
+          <span>Return to Zivelle</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Supabase JS Client & Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/review.js"></script>
+</body>
+</html>

@@ -29,10 +29,13 @@
   // Tabs
   const tabBtnProducts = document.getElementById('tab-btn-products');
   const tabBtnReviews = document.getElementById('tab-btn-reviews');
+  const tabBtnPending = document.getElementById('tab-btn-pending');
   const panelProducts = document.getElementById('panel-products');
   const panelReviews = document.getElementById('panel-reviews');
+  const panelPending = document.getElementById('panel-pending');
   const tabProductsBadge = document.getElementById('tab-products-badge');
   const tabReviewsBadge = document.getElementById('tab-reviews-badge');
+  const tabPendingBadge = document.getElementById('tab-pending-badge');
 
   // Products Elements
   const productSearchInput = document.getElementById('product-search-input');
@@ -46,11 +49,20 @@
   const productForm = document.getElementById('admin-product-form');
   const productFormId = document.getElementById('product-form-id');
   const productNameInput = document.getElementById('product-name');
-  const productCategorySelect = document.getElementById('product-category');
+  const productCategoryInput = document.getElementById('product-category');
   const productPriceInput = document.getElementById('product-price');
   const productBadgeSelect = document.getElementById('product-badge');
-  const productImageUrlInput = document.getElementById('product-image-url');
+  const productImageFileInput = document.getElementById('product-image-file');
+  const productImageDropzone = document.getElementById('product-image-dropzone');
+  const productCurrentImageUrlInput = document.getElementById('product-current-image-url');
+  const dropzonePrompt = document.getElementById('dropzone-prompt');
+  const dropzonePreviewWrap = document.getElementById('dropzone-preview-wrap');
   const productImagePreview = document.getElementById('product-image-preview');
+  const dropzoneFilename = document.getElementById('dropzone-filename');
+  const dropzoneFilesize = document.getElementById('dropzone-filesize');
+  const btnChangePhoto = document.getElementById('btn-change-photo');
+  const uploadProgressWrap = document.getElementById('upload-progress-wrap');
+  const uploadProgressText = document.getElementById('upload-progress-text');
   const productVariantsInput = document.getElementById('product-variants');
   const productInStockCheckbox = document.getElementById('product-in-stock');
   const btnCloseProductModal = document.getElementById('btn-close-product-modal');
@@ -61,6 +73,8 @@
   const reviewSearchInput = document.getElementById('review-search-input');
   const btnOpenAddReview = document.getElementById('btn-open-add-review');
   const reviewsTableBody = document.getElementById('reviews-table-body');
+  const pendingSearchInput = document.getElementById('pending-search-input');
+  const pendingReviewsTableBody = document.getElementById('pending-reviews-table-body');
 
   // Review Modal
   const reviewModalBackdrop = document.getElementById('review-modal-backdrop');
@@ -244,19 +258,16 @@
   // ---------------------------------------------------------------------------
   tabBtnProducts?.addEventListener('click', () => switchTab('products'));
   tabBtnReviews?.addEventListener('click', () => switchTab('reviews'));
+  tabBtnPending?.addEventListener('click', () => switchTab('pending'));
 
   function switchTab(tabName) {
-    if (tabName === 'products') {
-      tabBtnProducts?.classList.add('active');
-      tabBtnReviews?.classList.remove('active');
-      if (panelProducts) panelProducts.style.display = 'block';
-      if (panelReviews) panelReviews.style.display = 'none';
-    } else {
-      tabBtnReviews?.classList.add('active');
-      tabBtnProducts?.classList.remove('active');
-      if (panelReviews) panelReviews.style.display = 'block';
-      if (panelProducts) panelProducts.style.display = 'none';
-    }
+    tabBtnProducts?.classList.toggle('active', tabName === 'products');
+    tabBtnReviews?.classList.toggle('active', tabName === 'reviews');
+    tabBtnPending?.classList.toggle('active', tabName === 'pending');
+
+    if (panelProducts) panelProducts.style.display = tabName === 'products' ? 'block' : 'none';
+    if (panelReviews) panelReviews.style.display = tabName === 'reviews' ? 'block' : 'none';
+    if (panelPending) panelPending.style.display = tabName === 'pending' ? 'block' : 'none';
   }
 
   // ---------------------------------------------------------------------------
@@ -281,13 +292,33 @@
       if (error) throw error;
 
       productsCache = data || [];
+      updateAdminCategoryFilterOptions();
       renderProductsTable();
     } catch (err) {
       console.warn('Error loading products from Supabase:', err);
       productsCache = window.PRODUCTS_DATA || [];
+      updateAdminCategoryFilterOptions();
       renderProductsTable();
       showToast('Loaded local fallback products. Run supabase-schema.sql to sync tables.', 'error');
     }
+  }
+
+  function updateAdminCategoryFilterOptions() {
+    if (!productCategoryFilter) return;
+    const currentVal = (productCategoryFilter.value || 'all').toLowerCase();
+    const categories = new Set();
+    productsCache.forEach((p) => {
+      if (p.category) {
+        categories.add(String(p.category).trim());
+      }
+    });
+
+    let optionsHtml = '<option value="all">All Categories</option>';
+    categories.forEach((cat) => {
+      const isSelected = currentVal === cat.toLowerCase() ? 'selected' : '';
+      optionsHtml += `<option value="${escapeHtml(cat.toLowerCase())}" ${isSelected}>${escapeHtml(cat)}</option>`;
+    });
+    productCategoryFilter.innerHTML = optionsHtml;
   }
 
   function renderProductsTable() {
@@ -377,12 +408,82 @@
   productSearchInput?.addEventListener('input', renderProductsTable);
   productCategoryFilter?.addEventListener('change', renderProductsTable);
 
-  // Live Image Preview in Product Modal
-  productImageUrlInput?.addEventListener('input', () => {
-    const val = productImageUrlInput.value.trim();
-    if (productImagePreview) {
-      productImagePreview.src = val || 'images/products/placeholder-1.jpg';
+  // ---------------------------------------------------------------------------
+  // Photo Upload & Dropzone Controller
+  // ---------------------------------------------------------------------------
+  let selectedProductFile = null;
+
+  function handleProductPhotoSelect(file) {
+    if (!file) return;
+
+    // 1. Client-side file type validation
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (PNG, JPG, WebP, etc.).', 'error');
+      return;
     }
+
+    // 2. Client-side file size validation (5MB max limit)
+    const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) {
+      showToast('Image exceeds 5MB size limit. Please choose a smaller photo.', 'error');
+      return;
+    }
+
+    selectedProductFile = file;
+
+    // 3. Live local image preview
+    const previewUrl = URL.createObjectURL(file);
+    if (productImagePreview) productImagePreview.src = previewUrl;
+    if (dropzoneFilename) dropzoneFilename.textContent = file.name;
+    if (dropzoneFilesize) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+      dropzoneFilesize.textContent = `${sizeMb} MB • Ready to upload`;
+    }
+    if (dropzonePrompt) dropzonePrompt.style.display = 'none';
+    if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'flex';
+  }
+
+  // Dropzone click & drag-and-drop listeners
+  productImageDropzone?.addEventListener('click', (e) => {
+    productImageFileInput?.click();
+  });
+
+  productImageDropzone?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      productImageFileInput?.click();
+    }
+  });
+
+  btnChangePhoto?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    productImageFileInput?.click();
+  });
+
+  productImageFileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) handleProductPhotoSelect(file);
+  });
+
+  ['dragenter', 'dragover'].forEach((eventName) => {
+    productImageDropzone?.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      productImageDropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'dragend', 'drop'].forEach((eventName) => {
+    productImageDropzone?.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      productImageDropzone.classList.remove('dragover');
+    });
+  });
+
+  productImageDropzone?.addEventListener('drop', (e) => {
+    const file = e.dataTransfer?.files?.[0];
+    if (file) handleProductPhotoSelect(file);
   });
 
   // Open Product Modal
@@ -392,22 +493,33 @@
 
   function openProductModal(product = null) {
     if (!productModalBackdrop) return;
+    selectedProductFile = null;
+    if (productImageFileInput) productImageFileInput.value = '';
+    if (uploadProgressWrap) uploadProgressWrap.style.display = 'none';
 
     if (product) {
       if (productModalTitle) productModalTitle.textContent = 'Edit Product';
       if (productFormId) productFormId.value = product.id;
       if (productNameInput) productNameInput.value = product.name || '';
-      if (productCategorySelect) {
-        // match case e.g. "Chains"
-        const cat = (product.category || 'Chains');
-        productCategorySelect.value = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+      if (productCategoryInput) {
+        productCategoryInput.value = (product.category || '').trim();
       }
       if (productPriceInput) productPriceInput.value = parseFloat(product.price) || '';
       if (productBadgeSelect) productBadgeSelect.value = product.badge || '';
       
-      const img = product.image_url || product.image || '';
-      if (productImageUrlInput) productImageUrlInput.value = img;
-      if (productImagePreview) productImagePreview.src = img || 'images/products/placeholder-1.jpg';
+      const existingImg = product.image_url || product.image || '';
+      if (productCurrentImageUrlInput) productCurrentImageUrlInput.value = existingImg;
+
+      if (existingImg) {
+        if (productImagePreview) productImagePreview.src = existingImg;
+        if (dropzoneFilename) dropzoneFilename.textContent = 'Current Product Image';
+        if (dropzoneFilesize) dropzoneFilesize.textContent = 'Existing photo on file';
+        if (dropzonePrompt) dropzonePrompt.style.display = 'none';
+        if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'flex';
+      } else {
+        if (dropzonePrompt) dropzonePrompt.style.display = 'flex';
+        if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'none';
+      }
 
       let variantsArr = [];
       if (Array.isArray(product.variants)) {
@@ -421,8 +533,11 @@
       if (productModalTitle) productModalTitle.textContent = 'Add New Product';
       productForm?.reset();
       if (productFormId) productFormId.value = '';
+      if (productCategoryInput) productCategoryInput.value = '';
+      if (productCurrentImageUrlInput) productCurrentImageUrlInput.value = '';
       if (productInStockCheckbox) productInStockCheckbox.checked = true;
-      if (productImagePreview) productImagePreview.src = 'images/products/placeholder-1.jpg';
+      if (dropzonePrompt) dropzonePrompt.style.display = 'flex';
+      if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'none';
     }
 
     productModalBackdrop.style.display = 'flex';
@@ -430,48 +545,88 @@
 
   function closeProductModal() {
     if (productModalBackdrop) productModalBackdrop.style.display = 'none';
+    selectedProductFile = null;
+    if (uploadProgressWrap) uploadProgressWrap.style.display = 'none';
   }
 
   btnCloseProductModal?.addEventListener('click', closeProductModal);
   btnCancelProductModal?.addEventListener('click', closeProductModal);
 
-  // Save Product (Insert / Update)
+  // Save Product (Upload Photo to Supabase Storage -> Insert / Update Database)
   productForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const name = productNameInput?.value.trim();
-    const category = productCategorySelect?.value;
+    const name = (productNameInput?.value || '').trim();
+    const category = (productCategoryInput?.value || '').trim();
     const price = parseFloat(productPriceInput?.value);
     const badge = productBadgeSelect?.value || null;
-    const imageUrl = productImageUrlInput?.value.trim();
+    const existingImageUrl = productCurrentImageUrlInput?.value.trim();
     const variantsRaw = productVariantsInput?.value.trim();
     const inStock = productInStockCheckbox?.checked !== false;
     const existingId = productFormId?.value;
 
-    if (!name || isNaN(price) || !imageUrl) {
-      alert('Please fill out all required product fields (Name, Price, Image URL).');
+    if (!name || isNaN(price) || !category) {
+      showToast('Please fill out all required fields (Name, Category, and Price).', 'error');
       return;
     }
 
-    // Parse variants into array of strings
-    const variantsArray = variantsRaw 
-      ? variantsRaw.split(',').map((v) => v.trim()).filter((v) => v.length > 0)
-      : [];
+    if (!selectedProductFile && !existingImageUrl) {
+      showToast('Please select a product photo to upload.', 'error');
+      return;
+    }
 
-    const payload = {
-      name,
-      category,
-      price,
-      badge,
-      image_url: imageUrl,
-      variants: variantsArray,
-      in_stock: inStock
-    };
-
-    setButtonLoading(btnSaveProduct, true, 'Saving...');
+    setButtonLoading(btnSaveProduct, true, 'Saving Product...');
 
     try {
       if (!supabase) throw new Error('Supabase client is not available.');
+
+      let finalImageUrl = existingImageUrl;
+
+      // 1. If a new photo is selected, upload it directly to Supabase Storage
+      if (selectedProductFile) {
+        if (uploadProgressWrap) uploadProgressWrap.style.display = 'flex';
+        if (uploadProgressText) uploadProgressText.textContent = 'Uploading photo to Supabase Storage...';
+
+        const fileExt = selectedProductFile.name.split('.').pop().toLowerCase() || 'jpg';
+        const cleanName = selectedProductFile.name
+          .replace(/\.[^/.]+$/, '')
+          .replace(/[^a-zA-Z0-9_-]/g, '_')
+          .slice(0, 30);
+        const fileName = `${Date.now()}_${cleanName}.${fileExt}`;
+        const storagePath = `products/${fileName}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(storagePath, selectedProductFile, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (uploadError) {
+          throw new Error(`Photo upload failed: ${uploadError.message}. Ensure 'product-images' bucket is created in Supabase Storage.`);
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(storagePath);
+
+        finalImageUrl = publicUrl;
+      }
+
+      // 2. Parse variants into array of strings
+      const variantsArray = variantsRaw 
+        ? variantsRaw.split(',').map((v) => v.trim()).filter((v) => v.length > 0)
+        : [];
+
+      const payload = {
+        name,
+        category,
+        price,
+        badge,
+        image_url: finalImageUrl || 'images/products/placeholder-1.jpg',
+        variants: variantsArray,
+        in_stock: inStock
+      };
 
       if (existingId) {
         // UPDATE
@@ -499,6 +654,7 @@
       showToast(err.message || 'Failed to save product to database.', 'error');
     } finally {
       setButtonLoading(btnSaveProduct, false, 'Save Product');
+      if (uploadProgressWrap) uploadProgressWrap.style.display = 'none';
     }
   });
 
@@ -506,13 +662,18 @@
   // 6. Reviews Management Controller
   // ---------------------------------------------------------------------------
   async function loadReviews() {
-    if (!reviewsTableBody) return;
-    reviewsTableBody.innerHTML = `<tr><td colspan="5" class="table-loading-cell">Fetching reviews from Supabase...</td></tr>`;
+    if (reviewsTableBody) {
+      reviewsTableBody.innerHTML = `<tr><td colspan="5" class="table-loading-cell">Fetching approved reviews...</td></tr>`;
+    }
+    if (pendingReviewsTableBody) {
+      pendingReviewsTableBody.innerHTML = `<tr><td colspan="6" class="table-loading-cell">Fetching pending reviews...</td></tr>`;
+    }
 
     try {
       if (!supabase) {
         reviewsCache = [];
-        renderReviewsTable();
+        renderApprovedReviewsTable();
+        renderPendingReviewsTable();
         return;
       }
 
@@ -524,25 +685,30 @@
       if (error) throw error;
 
       reviewsCache = data || [];
-      renderReviewsTable();
+      renderApprovedReviewsTable();
+      renderPendingReviewsTable();
     } catch (err) {
       console.warn('Error loading reviews from Supabase:', err);
       reviewsCache = [];
-      renderReviewsTable();
-      showToast('Loaded local fallback reviews.', 'error');
+      renderApprovedReviewsTable();
+      renderPendingReviewsTable();
+      showToast('Loaded local reviews fallback.', 'error');
     }
   }
 
-  function renderReviewsTable() {
+  // A. Approved Reviews Table (Shown in "Approved Reviews" tab)
+  function renderApprovedReviewsTable() {
     if (!reviewsTableBody) return;
 
+    const approvedReviews = reviewsCache.filter((r) => (r.status || 'approved') === 'approved');
+
     if (tabReviewsBadge) {
-      tabReviewsBadge.textContent = reviewsCache.length;
+      tabReviewsBadge.textContent = approvedReviews.length;
     }
 
     const searchTerm = (reviewSearchInput?.value || '').toLowerCase().trim();
 
-    const filtered = reviewsCache.filter((r) => {
+    const filtered = approvedReviews.filter((r) => {
       const name = (r.customer_name || r.name || '').toLowerCase();
       const prod = (r.purchased_product || r.product || '').toLowerCase();
       const quote = (r.review_text || r.quote || '').toLowerCase();
@@ -552,7 +718,7 @@
     if (filtered.length === 0) {
       reviewsTableBody.innerHTML = `
         <tr>
-          <td colspan="5" class="table-loading-cell">No customer reviews found.</td>
+          <td colspan="5" class="table-loading-cell">No approved customer reviews found.</td>
         </tr>
       `;
       return;
@@ -590,8 +756,82 @@
     }).join('');
   }
 
-  // Reviews Search Listener
-  reviewSearchInput?.addEventListener('input', renderReviewsTable);
+  // B. Pending Reviews Table (Shown in new "Pending Reviews" tab)
+  function renderPendingReviewsTable() {
+    if (!pendingReviewsTableBody) return;
+
+    const pendingReviews = reviewsCache.filter((r) => r.status === 'pending');
+
+    if (tabPendingBadge) {
+      tabPendingBadge.textContent = pendingReviews.length;
+    }
+
+    const searchTerm = (pendingSearchInput?.value || '').toLowerCase().trim();
+
+    const filtered = pendingReviews.filter((r) => {
+      const name = (r.customer_name || r.name || '').toLowerCase();
+      const prod = (r.purchased_product || r.product || '').toLowerCase();
+      const quote = (r.review_text || r.quote || '').toLowerCase();
+      return !searchTerm || name.includes(searchTerm) || prod.includes(searchTerm) || quote.includes(searchTerm);
+    });
+
+    if (filtered.length === 0) {
+      pendingReviewsTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="table-loading-cell">No pending reviews awaiting approval. All customer feedback is published.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    pendingReviewsTableBody.innerHTML = filtered.map((review) => {
+      const customerName = review.customer_name || review.name || 'Verified Client';
+      const rating = parseInt(review.rating, 10) || 5;
+      const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      const text = review.review_text || review.quote || '';
+      const prod = review.purchased_product || review.product || '—';
+      
+      let dateDisplay = 'Recently';
+      if (review.created_at) {
+        try {
+          const d = new Date(review.created_at);
+          dateDisplay = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        } catch (e) {
+          dateDisplay = 'Recently';
+        }
+      }
+
+      return `
+        <tr data-id="${review.id}">
+          <td>
+            <strong>${customerName}</strong>
+          </td>
+          <td>
+            <span class="table-rating-stars" aria-label="${rating} stars">${stars}</span>
+          </td>
+          <td>
+            <div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>
+          </td>
+          <td>
+            <span style="color: #666; font-size: 0.825rem;">${prod}</span>
+          </td>
+          <td>
+            <span style="color: #666; font-size: 0.8rem;">${dateDisplay}</span>
+          </td>
+          <td>
+            <div class="table-actions">
+              <button type="button" class="btn-table-action btn-table-approve" onclick="window.ZivelleAdmin.approveReview('${review.id}')">Approve</button>
+              <button type="button" class="btn-table-action btn-table-delete" onclick="window.ZivelleAdmin.deleteReviewPrompt('${review.id}', '${escapeHtml(customerName)}')">Reject</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Reviews Search Listeners
+  reviewSearchInput?.addEventListener('input', renderApprovedReviewsTable);
+  pendingSearchInput?.addEventListener('input', renderPendingReviewsTable);
 
   // Open Review Modal
   btnOpenAddReview?.addEventListener('click', () => {
@@ -762,6 +1002,23 @@
     editReview: (id) => {
       const review = reviewsCache.find((r) => String(r.id) === String(id));
       if (review) openReviewModal(review);
+    },
+    approveReview: async (id) => {
+      if (!supabase) return;
+      try {
+        const { error } = await supabase
+          .from('reviews')
+          .update({ status: 'approved' })
+          .eq('id', id);
+
+        if (error) throw error;
+
+        showToast('Review approved and published to storefront!');
+        await loadReviews();
+      } catch (err) {
+        console.error('Error approving review:', err);
+        showToast(err.message || 'Failed to approve review', 'error');
+      }
     },
     deleteReviewPrompt: (id, name) => {
       openDeleteModal(`Are you sure you want to delete the review from "${name}"? This cannot be undone.`, async () => {

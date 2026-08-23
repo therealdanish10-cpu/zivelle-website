@@ -31,8 +31,18 @@ CREATE TABLE IF NOT EXISTS public.reviews (
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
     review_text TEXT NOT NULL,
     purchased_product TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved')),
     created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Migration for existing database (Add status column and approve existing admin reviews)
+ALTER TABLE public.reviews 
+ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending' 
+CHECK (status IN ('pending', 'approved'));
+
+UPDATE public.reviews 
+SET status = 'approved' 
+WHERE status IS NULL OR status = 'pending';
 
 -- -----------------------------------------------------------------------------
 -- 2. Enable Row Level Security (RLS)
@@ -41,32 +51,41 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 
 -- -----------------------------------------------------------------------------
--- 3. RLS Policies: Public Read Access (Storefront)
+-- 3. RLS Policies: Public Access (Storefront & Customer Review Submission)
 -- -----------------------------------------------------------------------------
 
 -- Drop existing policies if re-running
 DROP POLICY IF EXISTS "Allow public select on products" ON public.products;
 DROP POLICY IF EXISTS "Allow public select on reviews" ON public.reviews;
+DROP POLICY IF EXISTS "Allow public insert on reviews" ON public.reviews;
 DROP POLICY IF EXISTS "Allow authenticated insert on products" ON public.products;
 DROP POLICY IF EXISTS "Allow authenticated update on products" ON public.products;
 DROP POLICY IF EXISTS "Allow authenticated delete on products" ON public.products;
+DROP POLICY IF EXISTS "Allow authenticated select on reviews" ON public.reviews;
 DROP POLICY IF EXISTS "Allow authenticated insert on reviews" ON public.reviews;
 DROP POLICY IF EXISTS "Allow authenticated update on reviews" ON public.reviews;
 DROP POLICY IF EXISTS "Allow authenticated delete on reviews" ON public.reviews;
 
--- Public can read all products and reviews
+-- Public can read all active products
 CREATE POLICY "Allow public select on products"
 ON public.products FOR SELECT
 TO anon, authenticated
 USING (true);
 
+-- Public Storefront can ONLY read approved reviews (pending reviews remain hidden)
 CREATE POLICY "Allow public select on reviews"
 ON public.reviews FOR SELECT
 TO anon, authenticated
-USING (true);
+USING (status = 'approved');
+
+-- Customers can submit (INSERT) new pending reviews without logging in
+CREATE POLICY "Allow public insert on reviews"
+ON public.reviews FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
 
 -- -----------------------------------------------------------------------------
--- 4. RLS Policies: Authenticated Admin Write Access (Admin Panel)
+-- 4. RLS Policies: Authenticated Admin Access (Admin Panel & Approval)
 -- -----------------------------------------------------------------------------
 CREATE POLICY "Allow authenticated insert on products"
 ON public.products FOR INSERT
@@ -84,17 +103,20 @@ ON public.products FOR DELETE
 TO authenticated
 USING (true);
 
-CREATE POLICY "Allow authenticated insert on reviews"
-ON public.reviews FOR INSERT
+-- Authenticated admins can view ALL reviews (including pending awaiting approval)
+CREATE POLICY "Allow authenticated select on reviews"
+ON public.reviews FOR SELECT
 TO authenticated
-WITH CHECK (true);
+USING (true);
 
+-- Authenticated admins can approve/update any review
 CREATE POLICY "Allow authenticated update on reviews"
 ON public.reviews FOR UPDATE
 TO authenticated
 USING (true)
 WITH CHECK (true);
 
+-- Authenticated admins can reject/delete any review
 CREATE POLICY "Allow authenticated delete on reviews"
 ON public.reviews FOR DELETE
 TO authenticated
@@ -235,3 +257,58 @@ VALUES
     '2026-02-12 15:20:00+00'
 )
 ON CONFLICT DO NOTHING;
+
+-- -----------------------------------------------------------------------------
+-- 7. Supabase Storage: product-images Bucket & Policies
+-- -----------------------------------------------------------------------------
+-- Note: You can also create this bucket in the Supabase Dashboard:
+-- 1. Go to "Storage" in the left sidebar
+-- 2. Click "New bucket" -> Name: "product-images"
+-- 3. Toggle "Public bucket" to ON
+-- 4. Click "Save"
+-- -----------------------------------------------------------------------------
+
+-- Create bucket via SQL (if not exists)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'product-images',
+    'product-images',
+    true,
+    5242880, -- 5MB limit
+    ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+)
+ON CONFLICT (id) DO UPDATE SET 
+    public = true,
+    file_size_limit = 5242880,
+    allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
+
+-- Storage RLS Policies for product-images bucket
+DROP POLICY IF EXISTS "Public View Product Images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated Admin Upload Product Images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated Admin Update Product Images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated Admin Delete Product Images" ON storage.objects;
+
+-- 1. Allow Public SELECT (viewing images on the storefront)
+CREATE POLICY "Public View Product Images"
+ON storage.objects FOR SELECT
+TO anon, authenticated
+USING (bucket_id = 'product-images');
+
+-- 2. Allow Authenticated Users to INSERT (upload images via Admin Panel)
+CREATE POLICY "Authenticated Admin Upload Product Images"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'product-images');
+
+-- 3. Allow Authenticated Users to UPDATE images
+CREATE POLICY "Authenticated Admin Update Product Images"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'product-images');
+
+-- 4. Allow Authenticated Users to DELETE images
+CREATE POLICY "Authenticated Admin Delete Product Images"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'product-images');
+

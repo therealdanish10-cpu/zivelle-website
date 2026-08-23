@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal — Zivelle Atelier</title>
+  <title>ZIVELLE | Admin</title>
   <meta name="robots" content="noindex, nofollow">
 
   <!-- Favicon Links -->
@@ -156,8 +156,17 @@
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
               </svg>
-              <span>Client Reviews</span>
+              <span>Approved Reviews</span>
               <span class="tab-badge" id="tab-reviews-badge">0</span>
+            </button>
+
+            <button type="button" class="admin-tab-btn" data-tab="pending" id="tab-btn-pending">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Pending Reviews</span>
+              <span class="tab-badge tab-badge-pending" id="tab-pending-badge">0</span>
             </button>
           </div>
         </div>
@@ -180,10 +189,6 @@
             <div class="panel-actions-right">
               <select id="product-category-filter" class="admin-select-filter" aria-label="Filter by category">
                 <option value="all">All Categories</option>
-                <option value="chains">Chains</option>
-                <option value="bracelets">Bracelets</option>
-                <option value="rings">Rings</option>
-                <option value="earrings">Earrings</option>
               </select>
 
               <button type="button" class="btn-admin-cta" id="btn-open-add-product">
@@ -224,7 +229,7 @@
         </section>
 
         <!-- ===================================================================
-             TAB 2: REVIEWS MANAGEMENT
+             TAB 2: REVIEWS MANAGEMENT (Approved Storefront Reviews)
              =================================================================== -->
         <section class="admin-panel" id="panel-reviews" style="display: none;">
           
@@ -235,7 +240,7 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="text" id="review-search-input" class="admin-search-input" placeholder="Search by customer name or product...">
+              <input type="text" id="review-search-input" class="admin-search-input" placeholder="Search approved reviews by customer or product...">
             </div>
 
             <div class="panel-actions-right">
@@ -273,6 +278,47 @@
 
         </section>
 
+        <!-- ===================================================================
+             TAB 3: PENDING REVIEWS (Customer Submissions Awaiting Approval)
+             =================================================================== -->
+        <section class="admin-panel" id="panel-pending" style="display: none;">
+          
+          <!-- Action Bar -->
+          <div class="panel-action-bar">
+            <div class="panel-search-wrap">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="pending-search-input" class="admin-search-input" placeholder="Search pending reviews by customer or product...">
+            </div>
+          </div>
+
+          <!-- Pending Reviews Table -->
+          <div class="admin-table-card">
+            <div class="table-responsive">
+              <table class="admin-data-table" id="pending-reviews-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Rating</th>
+                    <th>Review Quote</th>
+                    <th>Product</th>
+                    <th>Submitted</th>
+                    <th style="text-align: right; width: 180px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="pending-reviews-table-body">
+                  <tr>
+                    <td colspan="6" class="table-loading-cell">Loading pending customer reviews...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
       </div>
     </main>
   </div>
@@ -301,12 +347,7 @@
 
           <div class="form-group">
             <label for="product-category" class="form-label">Category *</label>
-            <select id="product-category" class="form-select" required>
-              <option value="Chains">Chains</option>
-              <option value="Bracelets">Bracelets</option>
-              <option value="Rings">Rings</option>
-              <option value="Earrings">Earrings</option>
-            </select>
+            <input type="text" id="product-category" class="form-input" placeholder="e.g. Chains, Rings, Bracelets, Earrings" required>
           </div>
         </div>
 
@@ -329,12 +370,41 @@
         </div>
 
         <div class="form-group">
-          <label for="product-image-url" class="form-label">Image URL / Path *</label>
-          <div class="image-input-group">
-            <input type="text" id="product-image-url" class="form-input" placeholder="images/products/placeholder-1.jpg or https://..." required>
-            <div class="image-preview-box">
-              <img id="product-image-preview" src="images/products/placeholder-1.jpg" alt="Preview">
+          <label class="form-label">Product Photo *</label>
+          <input type="hidden" id="product-current-image-url">
+          <input type="file" id="product-image-file" class="admin-file-input" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" style="display: none;">
+          
+          <div class="admin-dropzone" id="product-image-dropzone" role="button" tabindex="0" aria-label="Upload product photo">
+            <!-- Empty / Prompt State -->
+            <div class="dropzone-prompt" id="dropzone-prompt">
+              <svg class="dropzone-icon" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <div class="dropzone-text-group">
+                <span class="dropzone-cta">Click or drag photo to upload</span>
+                <span class="dropzone-hint">PNG, JPG, WebP up to 5MB</span>
+              </div>
             </div>
+
+            <!-- Live Image Preview State -->
+            <div class="dropzone-preview-wrap" id="dropzone-preview-wrap" style="display: none;">
+              <img id="product-image-preview" class="dropzone-preview-img" src="images/products/placeholder-1.jpg" alt="Selected Product Photo">
+              <div class="dropzone-preview-meta">
+                <span class="dropzone-filename" id="dropzone-filename">Selected photo</span>
+                <span class="dropzone-filesize" id="dropzone-filesize">Ready to upload</span>
+                <button type="button" class="btn-change-photo" id="btn-change-photo">Change Photo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Progress / Status Indicator -->
+          <div class="upload-progress-wrap" id="upload-progress-wrap" style="display: none;">
+            <div class="upload-progress-bar">
+              <div class="upload-progress-fill" id="upload-progress-fill"></div>
+            </div>
+            <span class="upload-progress-text" id="upload-progress-text">Uploading photo to Supabase Storage...</span>
           </div>
         </div>
 

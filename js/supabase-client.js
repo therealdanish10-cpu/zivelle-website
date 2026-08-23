@@ -209,6 +209,7 @@
       const { data, error } = await client
         .from('reviews')
         .select('*')
+        .eq('status', 'approved')
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -217,12 +218,15 @@
       }
 
       if (data && data.length > 0) {
-        return data.map((r) => ({
-          name: r.customer_name || 'Verified Client',
-          rating: parseInt(r.rating, 10) || 5,
-          quote: r.review_text || '',
-          product: r.purchased_product || null
-        }));
+        const approved = data.filter((r) => (r.status || 'approved') === 'approved');
+        if (approved.length > 0) {
+          return approved.map((r) => ({
+            name: r.customer_name || 'Verified Client',
+            rating: parseInt(r.rating, 10) || 5,
+            quote: r.review_text || '',
+            product: r.purchased_product || null
+          }));
+        }
       }
 
       return fallbackReviews;

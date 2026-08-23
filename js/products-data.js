@@ -172,7 +172,7 @@ function renderProductCardMarkup(product, delayMs = 0) {
   const delayStyle = delayMs > 0 ? `style="transition-delay: ${delayMs}ms;"` : '';
 
   return `
-    <article class="product-card is-visible" data-category="${product.category}" data-id="${product.id}" data-name="${product.name}" data-price="${product.priceFormatted}" ${delayStyle}>
+    <article class="product-card" data-category="${product.category}" data-id="${product.id}" data-name="${product.name}" data-price="${product.priceFormatted}" ${delayStyle}>
       <div class="product-image-wrap">
         <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
         ${badgeHtml}

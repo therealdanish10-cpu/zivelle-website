@@ -164,23 +164,51 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------------------
   const sections = document.querySelectorAll('section[id], footer[id]');
 
-  function highlightActiveNavLink() {
-    const scrollY = window.pageYOffset + 120;
+  function setActiveNavSection(sectionId) {
+    if (!sectionId) return;
 
-    sections.forEach((section) => {
-      const sectionHeight = section.offsetHeight;
-      const sectionTop = section.offsetTop;
-      const sectionId = section.getAttribute('id');
-
-      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-        navLinks.forEach((link) => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === `#${sectionId}`) {
-            link.classList.add('active');
-          }
-        });
+    navLinks.forEach((link) => {
+      if (link.getAttribute('href') === `#${sectionId}`) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
       }
     });
+
+    drawerLinks.forEach((link) => {
+      if (link.getAttribute('href') === `#${sectionId}`) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  function highlightActiveNavLink() {
+    // 1. Check if user is scrolled near or at the bottom of the page (footer/#contact in view)
+    const isAtBottom = (window.innerHeight + window.pageYOffset) >= (document.documentElement.scrollHeight - 70);
+    if (isAtBottom) {
+      setActiveNavSection('contact');
+      return;
+    }
+
+    const headerOffset = (siteHeader ? siteHeader.offsetHeight : 84) + 50;
+    const scrollPosition = window.pageYOffset + headerOffset;
+    let currentId = null;
+
+    sections.forEach((section) => {
+      const top = section.offsetTop;
+      const height = section.offsetHeight;
+      const id = section.getAttribute('id');
+
+      if (scrollPosition >= top && scrollPosition < top + height) {
+        currentId = id;
+      }
+    });
+
+    if (currentId) {
+      setActiveNavSection(currentId);
+    }
   }
 
   window.addEventListener('scroll', highlightActiveNavLink, { passive: true });
@@ -301,6 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     featuredGrid.innerHTML = displayProducts.map((product, idx) => {
       return renderProductCardMarkup(product, idx * 160);
     }).join('');
+
+    // Attach IntersectionObserver immediately after cards are inserted into the DOM
+    initCardObservers();
   }
 
   // =========================================================================
@@ -310,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const shopEmptyState = document.getElementById('shop-empty-state');
   const shopResultsCount = document.getElementById('shop-results-count');
   const shopSortSelect = document.getElementById('shop-sort-select');
-  const categoryFilterBtns = document.querySelectorAll('.sidebar-category-btn');
+  const sidebarCategoryList = document.getElementById('sidebar-category-list') || document.querySelector('.sidebar-category-list');
   const btnClearFilters = document.getElementById('btn-clear-filters');
   const btnResetFilters = document.getElementById('btn-reset-filters');
   const btnMobileFilterTrigger = document.getElementById('btn-mobile-filter-trigger');
@@ -321,29 +352,79 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCategory = 'all';
   let currentSort = 'newest';
 
-  function updateSidebarCategoryCounts() {
-    if (!activeCatalog) return;
-    categoryFilterBtns.forEach((btn) => {
-      const cat = btn.getAttribute('data-category');
-      const badge = btn.querySelector('.sidebar-count-badge');
-      if (badge) {
-        if (cat === 'all') {
-          badge.textContent = activeCatalog.length;
-        } else {
-          const count = activeCatalog.filter((p) => p.category === cat).length;
-          badge.textContent = count;
+  function renderSidebarCategories() {
+    if (!sidebarCategoryList || !activeCatalog) return;
+
+    // Extract unique categories and calculate live counts
+    const categoryMap = new Map();
+    activeCatalog.forEach((p) => {
+      const rawCategory = (p.category || '').trim();
+      if (rawCategory) {
+        const key = rawCategory.toLowerCase();
+        if (!categoryMap.has(key)) {
+          const displayName = rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1);
+          categoryMap.set(key, {
+            key,
+            displayName,
+            count: 0
+          });
         }
+        categoryMap.get(key).count += 1;
       }
+    });
+
+    const totalCount = activeCatalog.length;
+    const isAllActive = currentCategory === 'all' || !categoryMap.has(currentCategory.toLowerCase());
+    if (isAllActive && currentCategory !== 'all') {
+      currentCategory = 'all';
+    }
+
+    let markup = `
+      <button type="button" class="sidebar-category-btn ${isAllActive ? 'active' : ''}" data-category="all">
+        <span>All Pieces</span>
+        <span class="sidebar-count-badge">${totalCount}</span>
+      </button>
+    `;
+
+    categoryMap.forEach(({ key, displayName, count }) => {
+      const isActive = currentCategory.toLowerCase() === key;
+      markup += `
+        <button type="button" class="sidebar-category-btn ${isActive ? 'active' : ''}" data-category="${key}">
+          <span>${displayName}</span>
+          <span class="sidebar-count-badge">${count}</span>
+        </button>
+      `;
+    });
+
+    sidebarCategoryList.innerHTML = markup;
+
+    // Attach click listeners to dynamically generated category buttons
+    const categoryButtons = sidebarCategoryList.querySelectorAll('.sidebar-category-btn');
+    categoryButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category') || 'all';
+        currentCategory = category;
+
+        categoryButtons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        updateShopProducts();
+
+        if (window.innerWidth <= 768) {
+          closeMobileFilterDrawer();
+        }
+      });
     });
   }
 
   function updateShopProducts() {
     if (!shopGrid) return;
 
-    // 1. Filter by category
+    // 1. Filter by category (case-insensitive)
     let filtered = activeCatalog.filter((p) => {
       if (currentCategory === 'all') return true;
-      return p.category === currentCategory;
+      const cat = (p.category || '').trim().toLowerCase();
+      return cat === currentCategory.toLowerCase();
     });
 
     // 2. Sort products
@@ -385,6 +466,9 @@ document.addEventListener('DOMContentLoaded', () => {
           return renderProductCardMarkup(product, idx * 80);
         }).join('');
         shopGrid.style.opacity = '1';
+
+        // Attach IntersectionObserver immediately after shop cards are inserted
+        initCardObservers();
       }, 80);
     }
   }
@@ -405,44 +489,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 3. Update category counts in sidebar
-    updateSidebarCategoryCounts();
+    // 3. Dynamically generate category filter buttons from fetched products
+    renderSidebarCategories();
 
-    // 4. Category button clicks
-    categoryFilterBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const category = btn.getAttribute('data-category') || 'all';
-        currentCategory = category;
-
-        categoryFilterBtns.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        updateShopProducts();
-
-        if (window.innerWidth <= 768) {
-          closeMobileFilterDrawer();
-        }
-      });
-    });
-
-    // 5. Sort selection change
+    // 4. Sort selection change
     shopSortSelect?.addEventListener('change', (e) => {
       currentSort = e.target.value;
       updateShopProducts();
     });
 
-    // 6. Reset filters
+    // 5. Reset filters
     function resetAllFilters() {
       currentCategory = 'all';
       currentSort = 'newest';
 
-      categoryFilterBtns.forEach((btn) => {
-        if (btn.getAttribute('data-category') === 'all') {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
+      renderSidebarCategories();
 
       if (shopSortSelect) {
         shopSortSelect.value = 'newest';
@@ -457,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnClearFilters?.addEventListener('click', resetAllFilters);
     btnResetFilters?.addEventListener('click', resetAllFilters);
 
-    // 7. Mobile filter drawer open/close
+    // 6. Mobile filter drawer open/close
     function openMobileFilterDrawer() {
       shopSidebarFilters?.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -941,7 +1002,7 @@ Please let me know the next steps for payment.`;
         : '';
 
       return `
-        <article class="review-card is-visible" data-index="${idx}">
+        <article class="review-card" data-index="${idx}">
           <div class="review-rating" aria-label="${review.rating} out of 5 stars">
             ${stars}
           </div>
@@ -962,49 +1023,74 @@ Please let me know the next steps for payment.`;
       `;
     }).join('');
 
-    renderReviewDots(activeReviews.length);
-    initReviewsCarousel(activeReviews.length);
+    renderReviewDots();
+    initReviewsCarousel();
+
+    // Attach IntersectionObserver so review cards animate with exact same stagger as product cards
+    initCardObservers();
   }
 
-  function renderReviewDots(count = 6) {
+  function getCardStepWidth() {
+    const firstCard = reviewsTrack?.querySelector('.review-card');
+    if (!firstCard) return 320;
+    const trackStyle = window.getComputedStyle(reviewsTrack);
+    const gap = parseFloat(trackStyle.gap) || 24;
+    return firstCard.offsetWidth + gap;
+  }
+
+  function getDistinctScrollPositions() {
+    if (!reviewsTrack) return 6;
+    const maxScrollLeft = reviewsTrack.scrollWidth - reviewsTrack.clientWidth;
+    const cardStep = getCardStepWidth();
+    if (maxScrollLeft <= 0 || cardStep <= 0) return 1;
+    const positions = Math.round(maxScrollLeft / cardStep) + 1;
+    return Math.max(1, positions);
+  }
+
+  function renderReviewDots() {
     if (!reviewsDotsContainer) return;
+    const count = getDistinctScrollPositions();
     reviewsDotsContainer.innerHTML = Array(count).fill(0).map((_, idx) => {
       return `<button type="button" class="reviews-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Go to review slide ${idx + 1}" role="tab"></button>`;
     }).join('');
   }
 
-  function initReviewsCarousel(totalCount = 6) {
+  function initReviewsCarousel() {
     if (!reviewsTrack) return;
-
-    function getCardStepWidth() {
-      const firstCard = reviewsTrack.querySelector('.review-card');
-      if (!firstCard) return 320;
-      const trackStyle = window.getComputedStyle(reviewsTrack);
-      const gap = parseFloat(trackStyle.gap) || 24;
-      return firstCard.offsetWidth + gap;
-    }
 
     function updateNavAndDots() {
       const scrollLeft = reviewsTrack.scrollLeft;
-      const maxScrollLeft = reviewsTrack.scrollWidth - reviewsTrack.clientWidth;
+      const clientWidth = reviewsTrack.clientWidth;
+      const scrollWidth = reviewsTrack.scrollWidth;
+      const maxScrollLeft = scrollWidth - clientWidth;
       const cardStep = getCardStepWidth();
+
+      const isAtEnd = maxScrollLeft <= 0 || (scrollLeft + clientWidth >= scrollWidth - 10);
+      const isAtStart = scrollLeft <= 8;
 
       // Update arrow disabled states
       if (reviewsPrevBtn) {
-        reviewsPrevBtn.disabled = scrollLeft <= 8;
+        reviewsPrevBtn.disabled = isAtStart;
       }
       if (reviewsNextBtn) {
-        reviewsNextBtn.disabled = scrollLeft >= maxScrollLeft - 8;
+        reviewsNextBtn.disabled = isAtEnd;
       }
 
-      // Calculate active card index
-      const activeIdx = Math.min(
-        totalCount - 1,
-        Math.max(0, Math.round(scrollLeft / cardStep))
-      );
-
       const dots = reviewsDotsContainer?.querySelectorAll('.reviews-dot');
-      dots?.forEach((dot, idx) => {
+      const numDots = dots ? dots.length : 0;
+      if (numDots === 0) return;
+
+      // Calculate active dot index
+      let activeIdx = 0;
+      if (isAtEnd) {
+        activeIdx = numDots - 1; // Force the last dot active when scrolled to the very end
+      } else if (isAtStart) {
+        activeIdx = 0;
+      } else {
+        activeIdx = Math.min(numDots - 1, Math.max(0, Math.round(scrollLeft / cardStep)));
+      }
+
+      dots.forEach((dot, idx) => {
         if (idx === activeIdx) {
           dot.classList.add('active');
           dot.setAttribute('aria-selected', 'true');
@@ -1015,7 +1101,7 @@ Please let me know the next steps for payment.`;
       });
     }
 
-    // Debounced or requestAnimationFrame scroll update
+    // Debounced scroll update
     let isScrollTicking = false;
     reviewsTrack.addEventListener('scroll', () => {
       if (!isScrollTicking) {
@@ -1038,7 +1124,7 @@ Please let me know the next steps for payment.`;
       reviewsTrack.scrollBy({ left: cardStep, behavior: 'smooth' });
     });
 
-    // Dot click handlers
+    // Dot click handlers: scroll by exact card step width
     reviewsDotsContainer?.addEventListener('click', (e) => {
       const dot = e.target.closest('.reviews-dot');
       if (!dot) return;
@@ -1047,7 +1133,14 @@ Please let me know the next steps for payment.`;
       reviewsTrack.scrollTo({ left: idx * cardStep, behavior: 'smooth' });
     });
 
+    // Resize listener to re-evaluate distinct positions & dots
+    window.addEventListener('resize', () => {
+      renderReviewDots();
+      updateNavAndDots();
+    }, { passive: true });
+
     // Initial update
+    renderReviewDots();
     updateNavAndDots();
   }
 
@@ -1119,28 +1212,33 @@ Please let me know the next steps for payment.`;
     }
   }
 
-  // 2. Individual Card Scroll Observer (Product Grid)
+  // 2. Individual Card Scroll Observer (Product Grid & Reviews Carousel)
+  let activeCardObserver = null;
+
   function initCardObservers() {
-    const cards = document.querySelectorAll('.product-card');
+    const cards = document.querySelectorAll('.product-card:not(.is-visible), .review-card:not(.is-visible)');
+    if (cards.length === 0) return;
 
     if ('IntersectionObserver' in window) {
-      const cardObserver = new IntersectionObserver((entries, obs) => {
-        const intersectingEntries = entries.filter((entry) => entry.isIntersecting);
-        intersectingEntries.forEach((entry, batchIdx) => {
-          const card = entry.target;
-          // Apply stagger only across cards that cross into the viewport in the same scroll batch
-          card.style.transitionDelay = `${batchIdx * 160}ms`;
-          card.classList.add('is-visible');
-          obs.unobserve(card);
+      if (!activeCardObserver) {
+        activeCardObserver = new IntersectionObserver((entries, obs) => {
+          const intersectingEntries = entries.filter((entry) => entry.isIntersecting);
+          intersectingEntries.forEach((entry, batchIdx) => {
+            const card = entry.target;
+            // Apply exact stagger delay across cards that cross into the viewport in the same scroll batch
+            card.style.transitionDelay = `${batchIdx * 160}ms`;
+            card.classList.add('is-visible');
+            obs.unobserve(card);
+          });
+        }, {
+          threshold: 0.12,
+          rootMargin: '0px 0px -40px 0px'
         });
-      }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -80px 0px'
-      });
+      }
 
       cards.forEach((card) => {
         if (!card.classList.contains('hidden')) {
-          cardObserver.observe(card);
+          activeCardObserver.observe(card);
         }
       });
     } else {
