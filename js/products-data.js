@@ -145,6 +145,24 @@ function renderProductCardMarkup(product, delayMs = 0) {
     ? `<span class="product-badge">${product.badge}</span>`
     : '';
 
+  const images = Array.isArray(product.images) && product.images.length > 0
+    ? product.images
+    : [product.image];
+
+  const hasMultipleImages = images.length > 1;
+
+  const galleryBtnHtml = `
+    <button type="button" class="product-gallery-btn" data-product-id="${product.id}" aria-label="View photo gallery for ${product.name}">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <line x1="11" y1="8" x2="11" y2="14"></line>
+        <line x1="8" y1="11" x2="14" y2="11"></line>
+      </svg>
+      ${hasMultipleImages ? `<span class="gallery-count">${images.length}</span>` : ''}
+    </button>
+  `;
+
   let variantsHtml = '';
   if (product.variants && product.variants.length > 0) {
     const pills = product.variants.map((v, idx) => {
@@ -173,9 +191,10 @@ function renderProductCardMarkup(product, delayMs = 0) {
 
   return `
     <article class="product-card" data-category="${product.category}" data-id="${product.id}" data-name="${product.name}" data-price="${product.priceFormatted}" ${delayStyle}>
-      <div class="product-image-wrap">
+      <div class="product-image-wrap" data-product-id="${product.id}">
         <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
         ${badgeHtml}
+        ${galleryBtnHtml}
       </div>
       <div class="product-info">
         <span class="product-category-label">${product.categoryLabel}</span>

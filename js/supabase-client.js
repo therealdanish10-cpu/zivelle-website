@@ -97,7 +97,7 @@
   /**
    * Normalize database product record to standard storefront schema
    */
-  function normalizeDbProduct(p, idx) {
+  function normalizeDbProduct(p, idx = 0) {
     const rawPrice = parseFloat(p.price) || 0;
     const rawVariants = Array.isArray(p.variants) 
       ? p.variants 
@@ -107,6 +107,23 @@
     const catLower = (p.category || 'chains').toLowerCase().trim();
     const catLabel = p.category ? (p.category.charAt(0).toUpperCase() + p.category.slice(1)) : 'Jewelry';
 
+    // Handle multiple product images (image_urls array) with fallback to single image_url
+    let images = [];
+    if (Array.isArray(p.image_urls) && p.image_urls.length > 0) {
+      images = p.image_urls.filter(Boolean);
+    } else if (typeof p.image_urls === 'string' && p.image_urls.trim()) {
+      try {
+        const parsed = JSON.parse(p.image_urls);
+        if (Array.isArray(parsed)) images = parsed.filter(Boolean);
+      } catch (e) {
+        images = [p.image_urls];
+      }
+    }
+    if (images.length === 0 && p.image_url) {
+      images = [p.image_url];
+    }
+    const primaryImage = images[0] || p.image_url || 'images/products/placeholder-1.jpg';
+
     return {
       id: p.id || `db-prod-${idx}`,
       name: p.name || 'Handcrafted Jewelry Piece',
@@ -114,7 +131,8 @@
       categoryLabel: catLabel,
       price: rawPrice,
       priceFormatted: `Rs. ${rawPrice.toLocaleString()}`,
-      image: p.image_url || 'images/products/placeholder-1.jpg',
+      image: primaryImage,
+      images: images.length > 0 ? images : [primaryImage],
       badge: p.badge || null,
       featured: p.featured === true || idx < 4,
       variantType: meta.variantType,
@@ -221,10 +239,13 @@
         const approved = data.filter((r) => (r.status || 'approved') === 'approved');
         if (approved.length > 0) {
           return approved.map((r) => ({
+            id: r.id,
             name: r.customer_name || 'Verified Client',
             rating: parseInt(r.rating, 10) || 5,
             quote: r.review_text || '',
-            product: r.purchased_product || null
+            product: r.purchased_product || null,
+            photoUrl: r.photo_url || null,
+            createdAt: r.created_at || null
           }));
         }
       }

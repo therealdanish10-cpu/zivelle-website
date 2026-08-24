@@ -115,6 +115,33 @@
               required></textarea>
           </div>
 
+          <!-- Optional Customer Photo Upload -->
+          <div class="review-form-group">
+            <label class="review-form-label">Add a Photo <span style="color: #777; font-weight: normal;">(Optional)</span></label>
+            <input type="file" id="review-photo-file" class="review-file-input" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" style="display: none;">
+            
+            <div class="review-photo-dropzone" id="review-photo-dropzone" role="button" tabindex="0" aria-label="Upload review photo">
+              <!-- Empty State Prompt -->
+              <div class="review-photo-prompt" id="review-photo-prompt">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Upload a photo of your jewelry (PNG, JPG, WebP up to 5MB)</span>
+              </div>
+
+              <!-- Preview State -->
+              <div class="review-photo-preview-wrap" id="review-photo-preview-wrap" style="display: none;">
+                <img id="review-photo-preview" class="review-photo-preview-img" src="" alt="Selected Photo Preview">
+                <div class="review-photo-preview-info">
+                  <span id="review-photo-filename" class="review-photo-filename">photo.jpg</span>
+                  <button type="button" class="btn-remove-review-photo" id="btn-remove-review-photo">Remove Photo</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Submit Action Button -->
           <button type="submit" class="btn-submit-review" id="btn-submit-review">
             <span class="btn-text">Submit Review</span>

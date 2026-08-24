@@ -1110,12 +1110,21 @@ Please let me know the next steps for payment.`;
         ? `<span class="review-product-tag">Purchased: ${review.product}</span>` 
         : '';
 
+      const photoHtml = review.photoUrl
+        ? `
+          <div class="review-photo-wrap">
+            <img src="${review.photoUrl}" alt="Photo from ${review.name}" class="review-customer-photo" onclick="window.ZivelleLightbox ? window.ZivelleLightbox.openSingleImage('${review.photoUrl}', 'Review from ${review.name}') : window.open('${review.photoUrl}', '_blank')" title="Click to view full photo">
+          </div>
+        `
+        : '';
+
       return `
         <article class="review-card" data-index="${idx}">
           <div class="review-rating" aria-label="${review.rating} out of 5 stars">
             ${stars}
           </div>
           <blockquote class="review-quote">${review.quote}</blockquote>
+          ${photoHtml}
           <div class="review-author-wrap">
             <div class="review-author-row">
               <span class="review-author-name">— ${review.name}</span>
@@ -1354,6 +1363,240 @@ Please let me know the next steps for payment.`;
       cards.forEach((card) => card.classList.add('is-visible'));
     }
   }
+
+  // =========================================================================
+  // ===== FULLSCREEN PRODUCT LIGHTBOX CONTROLLER =====
+  // =========================================================================
+  let lightboxEl = null;
+  let currentLightboxImages = [];
+  let currentLightboxIndex = 0;
+  let currentLightboxProduct = null;
+
+  function createLightboxDOM() {
+    if (lightboxEl) return lightboxEl;
+
+    const el = document.createElement('div');
+    el.id = 'product-lightbox';
+    el.className = 'product-lightbox';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-label', 'Product photo gallery');
+
+    el.innerHTML = `
+      <div class="lightbox-header">
+        <div class="lightbox-title-meta">
+          <h2 class="lightbox-product-title" id="lightbox-title"></h2>
+          <span class="lightbox-product-price" id="lightbox-price"></span>
+        </div>
+        <button type="button" class="lightbox-close-btn" id="lightbox-close" aria-label="Close photo gallery">&times;</button>
+      </div>
+
+      <div class="lightbox-body" id="lightbox-body">
+        <button type="button" class="lightbox-nav-btn lightbox-prev-btn" id="lightbox-prev" aria-label="Previous photo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <img src="" alt="Product Photo" class="lightbox-main-img" id="lightbox-main-img">
+
+        <button type="button" class="lightbox-nav-btn lightbox-next-btn" id="lightbox-next" aria-label="Next photo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div class="lightbox-footer">
+        <span class="lightbox-counter" id="lightbox-counter">1 of 1</span>
+        <div class="lightbox-thumbs" id="lightbox-thumbs"></div>
+      </div>
+    `;
+
+    document.body.appendChild(el);
+    lightboxEl = el;
+
+    // Close button
+    el.querySelector('#lightbox-close')?.addEventListener('click', closeLightbox);
+
+    // Click outside body to close
+    el.addEventListener('click', (e) => {
+      if (e.target === el || e.target.id === 'lightbox-body') {
+        closeLightbox();
+      }
+    });
+
+    // Nav arrows
+    el.querySelector('#lightbox-prev')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigateLightbox(-1);
+    });
+
+    el.querySelector('#lightbox-next')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigateLightbox(1);
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!lightboxEl || !lightboxEl.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigateLightbox(-1);
+      if (e.key === 'ArrowRight') navigateLightbox(1);
+    });
+
+    // Touch swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const bodyEl = el.querySelector('#lightbox-body');
+    bodyEl?.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    bodyEl?.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 45) {
+        if (diff > 0) {
+          navigateLightbox(-1); // swipe right -> previous
+        } else {
+          navigateLightbox(1); // swipe left -> next
+        }
+      }
+    }, { passive: true });
+
+    return el;
+  }
+
+  function openLightbox(product, startIndex = 0) {
+    if (!product) return;
+    createLightboxDOM();
+
+    currentLightboxProduct = product;
+    currentLightboxImages = Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : (Array.isArray(product.image_urls) && product.image_urls.length > 0 ? product.image_urls : [product.image || product.image_url]);
+    currentLightboxIndex = Math.max(0, Math.min(startIndex, currentLightboxImages.length - 1));
+
+    const titleEl = lightboxEl.querySelector('#lightbox-title');
+    const priceEl = lightboxEl.querySelector('#lightbox-price');
+    if (titleEl) titleEl.textContent = product.name || 'Zivelle Piece';
+    if (priceEl) priceEl.textContent = product.priceFormatted || (product.price ? `Rs. ${parseFloat(product.price).toLocaleString()}` : '');
+
+    updateLightboxView();
+    lightboxEl.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function openSingleImageLightbox(imageUrl, title = 'Photo Preview') {
+    if (!imageUrl) return;
+    createLightboxDOM();
+
+    currentLightboxProduct = { name: title, priceFormatted: '' };
+    currentLightboxImages = [imageUrl];
+    currentLightboxIndex = 0;
+
+    const titleEl = lightboxEl.querySelector('#lightbox-title');
+    const priceEl = lightboxEl.querySelector('#lightbox-price');
+    if (titleEl) titleEl.textContent = title;
+    if (priceEl) priceEl.textContent = '';
+
+    updateLightboxView();
+    lightboxEl.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    if (!lightboxEl) return;
+    lightboxEl.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function navigateLightbox(direction) {
+    if (currentLightboxImages.length <= 1) return;
+    currentLightboxIndex = (currentLightboxIndex + direction + currentLightboxImages.length) % currentLightboxImages.length;
+    updateLightboxView();
+  }
+
+  function updateLightboxView() {
+    if (!lightboxEl || currentLightboxImages.length === 0) return;
+
+    const mainImg = lightboxEl.querySelector('#lightbox-main-img');
+    const counterEl = lightboxEl.querySelector('#lightbox-counter');
+    const thumbsContainer = lightboxEl.querySelector('#lightbox-thumbs');
+    const prevBtn = lightboxEl.querySelector('#lightbox-prev');
+    const nextBtn = lightboxEl.querySelector('#lightbox-next');
+
+    const total = currentLightboxImages.length;
+    const currentImgUrl = currentLightboxImages[currentLightboxIndex];
+
+    if (mainImg) {
+      mainImg.style.opacity = '0.2';
+      mainImg.src = currentImgUrl;
+      mainImg.onload = () => {
+        mainImg.style.opacity = '1';
+      };
+    }
+
+    if (counterEl) {
+      counterEl.textContent = `${currentLightboxIndex + 1} of ${total}`;
+      counterEl.style.display = total > 1 ? 'block' : 'none';
+    }
+
+    if (prevBtn) prevBtn.style.display = total > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = total > 1 ? 'flex' : 'none';
+
+    if (thumbsContainer) {
+      if (total <= 1) {
+        thumbsContainer.innerHTML = '';
+        thumbsContainer.style.display = 'none';
+      } else {
+        thumbsContainer.style.display = 'flex';
+        thumbsContainer.innerHTML = currentLightboxImages.map((url, idx) => `
+          <button type="button" class="lightbox-thumb-btn ${idx === currentLightboxIndex ? 'active' : ''}" data-index="${idx}" aria-label="View photo ${idx + 1}">
+            <img src="${url}" alt="Thumbnail ${idx + 1}">
+          </button>
+        `).join('');
+
+        thumbsContainer.querySelectorAll('.lightbox-thumb-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const idx = parseInt(btn.getAttribute('data-index'), 10) || 0;
+            currentLightboxIndex = idx;
+            updateLightboxView();
+          });
+        });
+      }
+    }
+  }
+
+  // Delegated click handler on product image wrapper or gallery button
+  document.addEventListener('click', (e) => {
+    const galleryBtn = e.target.closest('.product-gallery-btn');
+    const imageWrap = e.target.closest('.product-image-wrap');
+
+    if (galleryBtn || imageWrap) {
+      if (e.target.closest('.btn-add-cart') || e.target.closest('.variant-pill')) return;
+
+      const trigger = galleryBtn || imageWrap;
+      const card = trigger.closest('.product-card');
+      const prodId = trigger.getAttribute('data-product-id') || card?.getAttribute('data-id');
+
+      if (prodId) {
+        const prod = activeCatalog.find((p) => String(p.id) === String(prodId));
+        if (prod) {
+          openLightbox(prod, 0);
+        }
+      }
+    }
+  });
+
+  window.ZivelleLightbox = {
+    open: openLightbox,
+    openSingleImage: openSingleImageLightbox,
+    close: closeLightbox
+  };
 
   // Consolidated Scroll & Resize Listener for 60fps Performance
   let isScrollTicking = false;

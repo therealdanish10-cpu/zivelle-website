@@ -27,6 +27,13 @@
   const reviewProductInput = document.getElementById('review-product');
   const reviewTextInput = document.getElementById('review-text');
   const reviewRatingInput = document.getElementById('review-rating');
+  const reviewPhotoFileInput = document.getElementById('review-photo-file');
+  const reviewPhotoDropzone = document.getElementById('review-photo-dropzone');
+  const reviewPhotoPrompt = document.getElementById('review-photo-prompt');
+  const reviewPhotoPreviewWrap = document.getElementById('review-photo-preview-wrap');
+  const reviewPhotoPreview = document.getElementById('review-photo-preview');
+  const reviewPhotoFilename = document.getElementById('review-photo-filename');
+  const btnRemoveReviewPhoto = document.getElementById('btn-remove-review-photo');
   const starButtons = document.querySelectorAll('.star-btn');
   const starRatingText = document.getElementById('star-rating-text');
   const reviewAlert = document.getElementById('review-alert');
@@ -34,6 +41,7 @@
   const btnSubmit = document.getElementById('btn-submit-review');
 
   let currentRating = 5;
+  let selectedReviewPhotoFile = null;
 
   const RATING_LABELS = {
     1: '1 Star — Poor Experience',
@@ -98,7 +106,52 @@
   // Initialize with 5 stars
   setRating(5);
 
-  // 4. Form Submit Handler
+  // 4. Photo Upload Handling
+  function handleReviewPhotoSelect(file) {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showError('Please select a valid image file (PNG, JPG, WebP, etc.).');
+      return;
+    }
+
+    const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE_BYTES) {
+      showError('Photo exceeds 5MB size limit. Please choose a smaller photo.');
+      return;
+    }
+
+    selectedReviewPhotoFile = file;
+    const previewUrl = URL.createObjectURL(file);
+    if (reviewPhotoPreview) reviewPhotoPreview.src = previewUrl;
+    if (reviewPhotoFilename) reviewPhotoFilename.textContent = file.name;
+    if (reviewPhotoPrompt) reviewPhotoPrompt.style.display = 'none';
+    if (reviewPhotoPreviewWrap) reviewPhotoPreviewWrap.style.display = 'flex';
+  }
+
+  function clearReviewPhoto() {
+    selectedReviewPhotoFile = null;
+    if (reviewPhotoFileInput) reviewPhotoFileInput.value = '';
+    if (reviewPhotoPrompt) reviewPhotoPrompt.style.display = 'flex';
+    if (reviewPhotoPreviewWrap) reviewPhotoPreviewWrap.style.display = 'none';
+  }
+
+  reviewPhotoDropzone?.addEventListener('click', (e) => {
+    if (e.target.closest('#btn-remove-review-photo')) return;
+    reviewPhotoFileInput?.click();
+  });
+
+  btnRemoveReviewPhoto?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearReviewPhoto();
+  });
+
+  reviewPhotoFileInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) handleReviewPhotoSelect(file);
+  });
+
+  // 5. Form Submit Handler
   reviewForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -135,12 +188,43 @@
         throw new Error('Database connection is currently unavailable. Please try again later.');
       }
 
+      let uploadedPhotoUrl = null;
+
+      // If customer attached a photo, upload it to Supabase Storage
+      if (selectedReviewPhotoFile) {
+        setLoading(true, 'Uploading photo...');
+        const fileExt = selectedReviewPhotoFile.name.split('.').pop().toLowerCase() || 'jpg';
+        const cleanName = selectedReviewPhotoFile.name
+          .replace(/\.[^/.]+$/, '')
+          .replace(/[^a-zA-Z0-9_-]/g, '_')
+          .slice(0, 24);
+        const fileName = `review_${Date.now()}_${cleanName}.${fileExt}`;
+        const storagePath = `reviews/${fileName}`;
+
+        const { error: uploadError } = await client.storage
+          .from('product-images')
+          .upload(storagePath, selectedReviewPhotoFile, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (!uploadError) {
+          const { data: { publicUrl } } = client.storage
+            .from('product-images')
+            .getPublicUrl(storagePath);
+          uploadedPhotoUrl = publicUrl;
+        } else {
+          console.warn('[Zivelle Review] Photo upload notice:', uploadError.message);
+        }
+      }
+
       // Customer submissions default to 'pending' for admin review & approval
       const payload = {
         customer_name: name,
         rating: rating,
         review_text: reviewText,
         purchased_product: product || null,
+        photo_url: uploadedPhotoUrl,
         status: 'pending'
       };
 

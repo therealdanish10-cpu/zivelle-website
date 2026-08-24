@@ -370,31 +370,25 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Product Photo *</label>
-          <input type="hidden" id="product-current-image-url">
-          <input type="file" id="product-image-file" class="admin-file-input" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" style="display: none;">
+          <label class="form-label">Product Photos *</label>
+          <small class="form-hint" style="margin-bottom: 0.6rem; display: block;">Upload one or more photos. The first image will be used as the primary storefront thumbnail.</small>
           
-          <div class="admin-dropzone" id="product-image-dropzone" role="button" tabindex="0" aria-label="Upload product photo">
-            <!-- Empty / Prompt State -->
+          <input type="file" id="product-images-file" class="admin-file-input" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple style="display: none;">
+          
+          <!-- Staged Images Strip / Grid -->
+          <div class="admin-images-grid" id="product-images-grid"></div>
+
+          <!-- Multi-photo dropzone button -->
+          <div class="admin-dropzone admin-dropzone-multi" id="product-image-dropzone" role="button" tabindex="0" aria-label="Upload product photos">
             <div class="dropzone-prompt" id="dropzone-prompt">
-              <svg class="dropzone-icon" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg class="dropzone-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
               <div class="dropzone-text-group">
-                <span class="dropzone-cta">Click or drag photo to upload</span>
-                <span class="dropzone-hint">PNG, JPG, WebP up to 5MB</span>
-              </div>
-            </div>
-
-            <!-- Live Image Preview State -->
-            <div class="dropzone-preview-wrap" id="dropzone-preview-wrap" style="display: none;">
-              <img id="product-image-preview" class="dropzone-preview-img" src="images/products/placeholder-1.jpg" alt="Selected Product Photo">
-              <div class="dropzone-preview-meta">
-                <span class="dropzone-filename" id="dropzone-filename">Selected photo</span>
-                <span class="dropzone-filesize" id="dropzone-filesize">Ready to upload</span>
-                <button type="button" class="btn-change-photo" id="btn-change-photo">Change Photo</button>
+                <span class="dropzone-cta">+ Click or drag to add photos</span>
+                <span class="dropzone-hint">Select one or multiple images (PNG, JPG, WebP up to 5MB each)</span>
               </div>
             </div>
           </div>
@@ -404,7 +398,7 @@
             <div class="upload-progress-bar">
               <div class="upload-progress-fill" id="upload-progress-fill"></div>
             </div>
-            <span class="upload-progress-text" id="upload-progress-text">Uploading photo to Supabase Storage...</span>
+            <span class="upload-progress-text" id="upload-progress-text">Uploading photos to Supabase Storage...</span>
           </div>
         </div>
 

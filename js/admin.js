@@ -52,16 +52,12 @@
   const productCategoryInput = document.getElementById('product-category');
   const productPriceInput = document.getElementById('product-price');
   const productBadgeSelect = document.getElementById('product-badge');
-  const productImageFileInput = document.getElementById('product-image-file');
+  const productImagesFileInput = document.getElementById('product-images-file');
+  const productImagesGrid = document.getElementById('product-images-grid');
   const productImageDropzone = document.getElementById('product-image-dropzone');
-  const productCurrentImageUrlInput = document.getElementById('product-current-image-url');
   const dropzonePrompt = document.getElementById('dropzone-prompt');
-  const dropzonePreviewWrap = document.getElementById('dropzone-preview-wrap');
-  const productImagePreview = document.getElementById('product-image-preview');
-  const dropzoneFilename = document.getElementById('dropzone-filename');
-  const dropzoneFilesize = document.getElementById('dropzone-filesize');
-  const btnChangePhoto = document.getElementById('btn-change-photo');
   const uploadProgressWrap = document.getElementById('upload-progress-wrap');
+  const uploadProgressFill = document.getElementById('upload-progress-fill');
   const uploadProgressText = document.getElementById('upload-progress-text');
   const productVariantsInput = document.getElementById('product-variants');
   const productInStockCheckbox = document.getElementById('product-in-stock');
@@ -409,60 +405,84 @@
   productCategoryFilter?.addEventListener('change', renderProductsTable);
 
   // ---------------------------------------------------------------------------
-  // Photo Upload & Dropzone Controller
+  // Multi-Photo Upload & Staging Controller
   // ---------------------------------------------------------------------------
-  let selectedProductFile = null;
+  let stagedProductImages = []; // Array of { type: 'existing'|'file', url: string, file?: File, previewUrl?: string }
 
-  function handleProductPhotoSelect(file) {
-    if (!file) return;
-
-    // 1. Client-side file type validation
-    if (!file.type.startsWith('image/')) {
-      showToast('Please select a valid image file (PNG, JPG, WebP, etc.).', 'error');
+  function renderStagedProductImages() {
+    if (!productImagesGrid) return;
+    if (stagedProductImages.length === 0) {
+      productImagesGrid.innerHTML = '';
+      if (dropzonePrompt) {
+        const cta = dropzonePrompt.querySelector('.dropzone-cta');
+        if (cta) cta.textContent = '+ Click or drag to add photos';
+      }
       return;
     }
 
-    // 2. Client-side file size validation (5MB max limit)
+    if (dropzonePrompt) {
+      const cta = dropzonePrompt.querySelector('.dropzone-cta');
+      if (cta) cta.textContent = '+ Add More Photos';
+    }
+
+    productImagesGrid.innerHTML = stagedProductImages.map((item, idx) => {
+      const src = item.type === 'file' ? item.previewUrl : item.url;
+      const isPrimary = idx === 0;
+      return `
+        <div class="admin-image-item ${isPrimary ? 'is-primary' : ''}">
+          <img src="${src}" class="admin-image-thumb" alt="Product photo ${idx + 1}">
+          ${isPrimary ? '<span class="admin-image-primary-badge">Primary</span>' : ''}
+          <button type="button" class="admin-image-remove-btn" onclick="window.ZivelleAdmin.removeStagedImage(${idx})" aria-label="Remove photo">&times;</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function handleProductPhotosSelect(files) {
+    if (!files || files.length === 0) return;
     const MAX_SIZE_BYTES = 5 * 1024 * 1024;
-    if (file.size > MAX_SIZE_BYTES) {
-      showToast('Image exceeds 5MB size limit. Please choose a smaller photo.', 'error');
-      return;
-    }
+    let addedCount = 0;
 
-    selectedProductFile = file;
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        showToast(`"${file.name}" is not an image file.`, 'error');
+        return;
+      }
+      if (file.size > MAX_SIZE_BYTES) {
+        showToast(`"${file.name}" exceeds 5MB limit and was skipped.`, 'error');
+        return;
+      }
 
-    // 3. Live local image preview
-    const previewUrl = URL.createObjectURL(file);
-    if (productImagePreview) productImagePreview.src = previewUrl;
-    if (dropzoneFilename) dropzoneFilename.textContent = file.name;
-    if (dropzoneFilesize) {
-      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      dropzoneFilesize.textContent = `${sizeMb} MB • Ready to upload`;
+      const previewUrl = URL.createObjectURL(file);
+      stagedProductImages.push({
+        type: 'file',
+        file,
+        previewUrl
+      });
+      addedCount++;
+    });
+
+    if (addedCount > 0) {
+      renderStagedProductImages();
     }
-    if (dropzonePrompt) dropzonePrompt.style.display = 'none';
-    if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'flex';
   }
 
   // Dropzone click & drag-and-drop listeners
-  productImageDropzone?.addEventListener('click', (e) => {
-    productImageFileInput?.click();
+  productImageDropzone?.addEventListener('click', () => {
+    productImagesFileInput?.click();
   });
 
   productImageDropzone?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      productImageFileInput?.click();
+      productImagesFileInput?.click();
     }
   });
 
-  btnChangePhoto?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    productImageFileInput?.click();
-  });
-
-  productImageFileInput?.addEventListener('change', (e) => {
-    const file = e.target.files?.[0];
-    if (file) handleProductPhotoSelect(file);
+  productImagesFileInput?.addEventListener('change', (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) handleProductPhotosSelect(files);
+    productImagesFileInput.value = '';
   });
 
   ['dragenter', 'dragover'].forEach((eventName) => {
@@ -482,8 +502,8 @@
   });
 
   productImageDropzone?.addEventListener('drop', (e) => {
-    const file = e.dataTransfer?.files?.[0];
-    if (file) handleProductPhotoSelect(file);
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) handleProductPhotosSelect(files);
   });
 
   // Open Product Modal
@@ -493,8 +513,8 @@
 
   function openProductModal(product = null) {
     if (!productModalBackdrop) return;
-    selectedProductFile = null;
-    if (productImageFileInput) productImageFileInput.value = '';
+    stagedProductImages = [];
+    if (productImagesFileInput) productImagesFileInput.value = '';
     if (uploadProgressWrap) uploadProgressWrap.style.display = 'none';
 
     if (product) {
@@ -506,20 +526,29 @@
       }
       if (productPriceInput) productPriceInput.value = parseFloat(product.price) || '';
       if (productBadgeSelect) productBadgeSelect.value = product.badge || '';
-      
-      const existingImg = product.image_url || product.image || '';
-      if (productCurrentImageUrlInput) productCurrentImageUrlInput.value = existingImg;
 
-      if (existingImg) {
-        if (productImagePreview) productImagePreview.src = existingImg;
-        if (dropzoneFilename) dropzoneFilename.textContent = 'Current Product Image';
-        if (dropzoneFilesize) dropzoneFilesize.textContent = 'Existing photo on file';
-        if (dropzonePrompt) dropzonePrompt.style.display = 'none';
-        if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'flex';
-      } else {
-        if (dropzonePrompt) dropzonePrompt.style.display = 'flex';
-        if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'none';
+      // Populate staged images from product.image_urls or product.image_url
+      let existingUrls = [];
+      if (Array.isArray(product.image_urls) && product.image_urls.length > 0) {
+        existingUrls = product.image_urls.filter(Boolean);
+      } else if (typeof product.image_urls === 'string' && product.image_urls.trim()) {
+        try {
+          const parsed = JSON.parse(product.image_urls);
+          if (Array.isArray(parsed)) existingUrls = parsed.filter(Boolean);
+        } catch (e) {
+          existingUrls = [product.image_urls];
+        }
       }
+      if (existingUrls.length === 0 && (product.image_url || product.image)) {
+        existingUrls = [product.image_url || product.image];
+      }
+
+      stagedProductImages = existingUrls.map((url) => ({
+        type: 'existing',
+        url
+      }));
+
+      renderStagedProductImages();
 
       let variantsArr = [];
       if (Array.isArray(product.variants)) {
@@ -534,10 +563,9 @@
       productForm?.reset();
       if (productFormId) productFormId.value = '';
       if (productCategoryInput) productCategoryInput.value = '';
-      if (productCurrentImageUrlInput) productCurrentImageUrlInput.value = '';
       if (productInStockCheckbox) productInStockCheckbox.checked = true;
-      if (dropzonePrompt) dropzonePrompt.style.display = 'flex';
-      if (dropzonePreviewWrap) dropzonePreviewWrap.style.display = 'none';
+      stagedProductImages = [];
+      renderStagedProductImages();
     }
 
     productModalBackdrop.style.display = 'flex';
@@ -545,14 +573,14 @@
 
   function closeProductModal() {
     if (productModalBackdrop) productModalBackdrop.style.display = 'none';
-    selectedProductFile = null;
+    stagedProductImages = [];
     if (uploadProgressWrap) uploadProgressWrap.style.display = 'none';
   }
 
   btnCloseProductModal?.addEventListener('click', closeProductModal);
   btnCancelProductModal?.addEventListener('click', closeProductModal);
 
-  // Save Product (Upload Photo to Supabase Storage -> Insert / Update Database)
+  // Save Product (Upload Multiple Photos to Supabase Storage -> Insert / Update Database)
   productForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -560,7 +588,6 @@
     const category = (productCategoryInput?.value || '').trim();
     const price = parseFloat(productPriceInput?.value);
     const badge = productBadgeSelect?.value || null;
-    const existingImageUrl = productCurrentImageUrlInput?.value.trim();
     const variantsRaw = productVariantsInput?.value.trim();
     const inStock = productInStockCheckbox?.checked !== false;
     const existingId = productFormId?.value;
@@ -570,8 +597,8 @@
       return;
     }
 
-    if (!selectedProductFile && !existingImageUrl) {
-      showToast('Please select a product photo to upload.', 'error');
+    if (stagedProductImages.length === 0) {
+      showToast('Please upload at least one product photo.', 'error');
       return;
     }
 
@@ -580,40 +607,52 @@
     try {
       if (!supabase) throw new Error('Supabase client is not available.');
 
-      let finalImageUrl = existingImageUrl;
+      if (uploadProgressWrap) uploadProgressWrap.style.display = 'flex';
+      const finalImageUrls = [];
 
-      // 1. If a new photo is selected, upload it directly to Supabase Storage
-      if (selectedProductFile) {
-        if (uploadProgressWrap) uploadProgressWrap.style.display = 'flex';
-        if (uploadProgressText) uploadProgressText.textContent = 'Uploading photo to Supabase Storage...';
-
-        const fileExt = selectedProductFile.name.split('.').pop().toLowerCase() || 'jpg';
-        const cleanName = selectedProductFile.name
-          .replace(/\.[^/.]+$/, '')
-          .replace(/[^a-zA-Z0-9_-]/g, '_')
-          .slice(0, 30);
-        const fileName = `${Date.now()}_${cleanName}.${fileExt}`;
-        const storagePath = `products/${fileName}`;
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(storagePath, selectedProductFile, {
-            cacheControl: '3600',
-            upsert: true
-          });
-
-        if (uploadError) {
-          throw new Error(`Photo upload failed: ${uploadError.message}. Ensure 'product-images' bucket is created in Supabase Storage.`);
+      for (let i = 0; i < stagedProductImages.length; i++) {
+        const item = stagedProductImages[i];
+        if (uploadProgressText) {
+          uploadProgressText.textContent = `Processing photo ${i + 1} of ${stagedProductImages.length}...`;
+        }
+        if (uploadProgressFill) {
+          uploadProgressFill.style.width = `${Math.round(((i + 1) / stagedProductImages.length) * 100)}%`;
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(storagePath);
+        if (item.type === 'existing') {
+          finalImageUrls.push(item.url);
+        } else if (item.type === 'file' && item.file) {
+          const file = item.file;
+          const fileExt = file.name.split('.').pop().toLowerCase() || 'jpg';
+          const cleanName = file.name
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[^a-zA-Z0-9_-]/g, '_')
+            .slice(0, 24);
+          const fileName = `${Date.now()}_${i}_${cleanName}.${fileExt}`;
+          const storagePath = `products/${fileName}`;
 
-        finalImageUrl = publicUrl;
+          const { error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(storagePath, file, {
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (uploadError) {
+            throw new Error(`Upload failed for "${file.name}": ${uploadError.message}. Ensure 'product-images' bucket is created.`);
+          }
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(storagePath);
+
+          finalImageUrls.push(publicUrl);
+        }
       }
 
-      // 2. Parse variants into array of strings
+      if (uploadProgressFill) uploadProgressFill.style.width = '100%';
+
+      // Parse variants into array of strings
       const variantsArray = variantsRaw 
         ? variantsRaw.split(',').map((v) => v.trim()).filter((v) => v.length > 0)
         : [];
@@ -623,7 +662,8 @@
         category,
         price,
         badge,
-        image_url: finalImageUrl || 'images/products/placeholder-1.jpg',
+        image_url: finalImageUrls[0] || 'images/products/placeholder-1.jpg',
+        image_urls: finalImageUrls,
         variants: variantsArray,
         in_stock: inStock
       };
@@ -730,6 +770,16 @@
       const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
       const text = review.review_text || review.quote || '';
       const prod = review.purchased_product || review.product || '—';
+      const photoUrl = review.photo_url || review.photoUrl || null;
+
+      const quoteCellHtml = photoUrl
+        ? `
+          <div class="table-review-with-photo">
+            <img src="${photoUrl}" class="table-review-photo-thumb" alt="Customer photo" onclick="window.ZivelleAdmin.previewImage('${photoUrl}')" title="Click to view photo full size">
+            <div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>
+          </div>
+        `
+        : `<div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>`;
 
       return `
         <tr data-id="${review.id}">
@@ -740,7 +790,7 @@
             <span class="table-rating-stars" aria-label="${rating} stars">${stars}</span>
           </td>
           <td>
-            <div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>
+            ${quoteCellHtml}
           </td>
           <td>
             <span style="color: #666; font-size: 0.825rem;">${prod}</span>
@@ -790,6 +840,7 @@
       const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
       const text = review.review_text || review.quote || '';
       const prod = review.purchased_product || review.product || '—';
+      const photoUrl = review.photo_url || review.photoUrl || null;
       
       let dateDisplay = 'Recently';
       if (review.created_at) {
@@ -801,6 +852,15 @@
         }
       }
 
+      const quoteCellHtml = photoUrl
+        ? `
+          <div class="table-review-with-photo">
+            <img src="${photoUrl}" class="table-review-photo-thumb" alt="Customer photo" onclick="window.ZivelleAdmin.previewImage('${photoUrl}')" title="Click to view photo full size">
+            <div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>
+          </div>
+        `
+        : `<div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>`;
+
       return `
         <tr data-id="${review.id}">
           <td>
@@ -810,7 +870,7 @@
             <span class="table-rating-stars" aria-label="${rating} stars">${stars}</span>
           </td>
           <td>
-            <div class="table-review-quote" title="${escapeHtml(text)}">"${text}"</div>
+            ${quoteCellHtml}
           </td>
           <td>
             <span style="color: #666; font-size: 0.825rem;">${prod}</span>
@@ -1002,6 +1062,16 @@
     editReview: (id) => {
       const review = reviewsCache.find((r) => String(r.id) === String(id));
       if (review) openReviewModal(review);
+    },
+    removeStagedImage: (idx) => {
+      if (idx >= 0 && idx < stagedProductImages.length) {
+        stagedProductImages.splice(idx, 1);
+        renderStagedProductImages();
+      }
+    },
+    previewImage: (url) => {
+      if (!url) return;
+      window.open(url, '_blank');
     },
     approveReview: async (id) => {
       if (!supabase) return;

@@ -210,6 +210,85 @@
   margin-top: 0.35rem;
 }
 
+/* Review Photo Upload Dropzone */
+.review-photo-dropzone {
+  border: 1.5px dashed rgba(201, 162, 94, 0.6);
+  border-radius: 4px;
+  background-color: #fbf9f6;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.review-photo-dropzone:hover,
+.review-photo-dropzone:focus-visible {
+  border-color: #c9a25e;
+  background-color: #f7f1e6;
+}
+
+.review-photo-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #8c6a2d;
+}
+
+.review-photo-prompt svg {
+  stroke: #c9a25e;
+  flex-shrink: 0;
+}
+
+.review-photo-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.review-photo-preview-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1.5px solid #c9a25e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.review-photo-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.review-photo-filename {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-remove-review-photo {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.btn-remove-review-photo:hover {
+  color: #991b1b;
+}
+
 /* Submit Button */
 .btn-submit-review {
   width: 100%;

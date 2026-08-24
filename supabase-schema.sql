@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS public.products (
     name TEXT NOT NULL,
     category TEXT NOT NULL, -- Chains, Bracelets, Rings, Earrings
     price NUMERIC NOT NULL,
-    image_url TEXT NOT NULL,
+    image_url TEXT NOT NULL, -- Primary thumbnail image
+    image_urls JSONB DEFAULT '[]'::jsonb, -- Array of all product photo URLs
     badge TEXT, -- Bestseller, Signature, New, Popular, or NULL
     variants JSONB DEFAULT '[]'::jsonb, -- e.g. ["16\"", "18\"", "20\""] or rich variant objects
     in_stock BOOLEAN DEFAULT true,
@@ -31,14 +32,30 @@ CREATE TABLE IF NOT EXISTS public.reviews (
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
     review_text TEXT NOT NULL,
     purchased_product TEXT,
+    photo_url TEXT, -- Optional customer attached photo URL
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved')),
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Migration for existing database (Add status column and approve existing admin reviews)
+-- -----------------------------------------------------------------------------
+-- Migrations for Existing Database
+-- -----------------------------------------------------------------------------
+
+-- 1. Add image_urls column to products and backfill from image_url
+ALTER TABLE public.products 
+ADD COLUMN IF NOT EXISTS image_urls JSONB DEFAULT '[]'::jsonb;
+
+UPDATE public.products 
+SET image_urls = jsonb_build_array(image_url) 
+WHERE (image_urls IS NULL OR image_urls = '[]'::jsonb) AND image_url IS NOT NULL AND image_url <> '';
+
+-- 2. Add status & photo_url columns to reviews and approve existing admin reviews
 ALTER TABLE public.reviews 
 ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending' 
 CHECK (status IN ('pending', 'approved'));
+
+ALTER TABLE public.reviews 
+ADD COLUMN IF NOT EXISTS photo_url TEXT;
 
 UPDATE public.reviews 
 SET status = 'approved' 
