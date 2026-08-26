@@ -7,13 +7,17 @@
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
-window.scrollTo(0, 0);
+if (!window.location.hash) {
+  window.scrollTo(0, 0);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
-  // Ensure scroll is reset to top on DOM ready
-  window.scrollTo(0, 0);
+  // Ensure scroll is reset to top on DOM ready ONLY if no hash is in the URL
+  if (!window.location.hash) {
+    window.scrollTo(0, 0);
+  }
 
   // -------------------------------------------------------------------------
   // 1. DOM Elements
@@ -116,8 +120,39 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -------------------------------------------------------------------------
-  // 4. Smooth Anchor Navigation with Header Offset
+  // 4. Smooth Anchor & Hash Navigation with Header Offset
   // -------------------------------------------------------------------------
+  function scrollToTargetElement(targetEl, smooth = true) {
+    if (!targetEl) return;
+    const headerHeight = siteHeader ? siteHeader.offsetHeight : 0;
+    const targetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - (headerHeight - 10);
+
+    window.scrollTo({
+      top: Math.max(0, targetPosition),
+      behavior: smooth ? 'smooth' : 'auto'
+    });
+  }
+
+  function handleHashNavigation(smooth = true) {
+    const hash = window.location.hash;
+    if (!hash || hash === '#' || hash.length <= 1) return false;
+
+    try {
+      const targetEl = document.querySelector(hash);
+      if (targetEl) {
+        scrollToTargetElement(targetEl, smooth);
+        return true;
+      }
+    } catch (e) {
+      const targetById = document.getElementById(hash.slice(1));
+      if (targetById) {
+        scrollToTargetElement(targetById, smooth);
+        return true;
+      }
+    }
+    return false;
+  }
+
   const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
   anchorLinks.forEach((anchor) => {
@@ -125,18 +160,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetId = this.getAttribute('href');
       if (!targetId || targetId === '#') return;
 
-      const targetEl = document.querySelector(targetId);
-      if (targetEl) {
-        e.preventDefault();
-        const headerHeight = siteHeader ? siteHeader.offsetHeight : 0;
-        const targetPosition = targetEl.getBoundingClientRect().top + window.pageYOffset - (headerHeight - 10);
-
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
-      }
+      try {
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          scrollToTargetElement(targetEl, true);
+        }
+      } catch (err) {}
     });
+  });
+
+  window.addEventListener('hashchange', () => {
+    handleHashNavigation(true);
   });
 
   // -------------------------------------------------------------------------
@@ -1146,6 +1181,13 @@ Please let me know the next steps for payment.`;
 
     // Attach IntersectionObserver so review cards animate with exact same stagger as product cards
     initCardObservers();
+
+    // If arriving at #reviews, refine scroll position once async reviews are rendered
+    if (window.location.hash === '#reviews') {
+      setTimeout(() => {
+        handleHashNavigation(true);
+      }, 50);
+    }
   }
 
   function getCardStepWidth() {
@@ -1630,11 +1672,22 @@ Please let me know the next steps for payment.`;
   initScrollAnimations();
   initCardObservers();
   onScrollOrResize();
+
+  // Handle initial hash navigation if user arrived with a hash in URL (e.g. index.html#about or index.html#reviews)
+  if (window.location.hash) {
+    setTimeout(() => {
+      handleHashNavigation(true);
+    }, 60);
+  }
 });
 
-// Final fallback reset on full window load
+// Window load handler: maintain scroll to top only if NO hash is present, or refine hash element position
 window.addEventListener('load', () => {
-  window.scrollTo(0, 0);
+  if (window.location.hash) {
+    handleHashNavigation(true);
+  } else {
+    window.scrollTo(0, 0);
+  }
 });
 
 
